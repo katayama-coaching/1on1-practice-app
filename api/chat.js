@@ -1,7 +1,3 @@
-import Anthropic from "@anthropic-ai/sdk";
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
 const SCENARIOS = {
   burnout: {
     name: "燃え尽き・モチベーション低下",
@@ -43,7 +39,7 @@ const SCENARIOS = {
 返答は1〜4文程度で、リアルな部下として自然に話してください。`,
   },
   performance: {
-    name: "業務パフォーマンス・スキルの課題",
+    name: "業務パフォーマンスの課題",
     systemPrompt: `あなたは「高橋さん（35歳）」という部下を演じてください。
 状況：最近、業務でミスが増えており、自信を失っている。
 以前は得意だったことがうまくできなくなった気がする。プレッシャーを感じている。
@@ -87,6 +83,34 @@ const FEEDBACK_PROMPT = `あなたは1on1ミーティングのプロフェッシ
 
 日本語で、温かみがありながら建設的なフィードバックを提供してください。`;
 
+async function callClaude(system, messages, maxTokens = 300) {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error("ANTHROPIC_API_KEY が設定されていません");
+
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+    },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-6",
+      max_tokens: maxTokens,
+      system,
+      messages,
+    }),
+  });
+
+  if (!response.ok) {
+    const err = await response.text();
+    throw new Error(`Anthropic API error ${response.status}: ${err}`);
+  }
+
+  const data = await response.json();
+  return data.content[0].text;
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -94,27 +118,13 @@ export default async function handler(req, res) {
 
   const { action, scenario, messages } = req.body;
 
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return res.status(500).json({ error: "ANTHROPIC_API_KEY が設定されていません" });
-  }
-
   try {
     if (action === "chat") {
       const scenarioData = SCENARIOS[scenario];
-      if (!scenarioData) {
-        return res.status(400).json({ error: "無効なシナリオです" });
-      }
+      if (!scenarioData) return res.status(400).json({ error: "無効なシナリオです" });
 
-      const response = await client.messages.create({
-        model: "claude-sonnet-4-6",
-        max_tokens: 300,
-        system: scenarioData.systemPrompt,
-        messages: messages,
-      });
-
-      return res.status(200).json({
-        reply: response.content[0].text,
-      });
+      const reply = await callClaude(scenarioData.systemPrompt, messages, 300);
+      return res.status(200).json({ reply });
     }
 
     if (action === "feedback") {
@@ -122,21 +132,17 @@ export default async function handler(req, res) {
         .map((m) => `【${m.role === "user" ? "上司" : "部下"}】${m.content}`)
         .join("\n");
 
-      const response = await client.messages.create({
-        model: "claude-sonnet-4-6",
-        max_tokens: 1500,
-        system: FEEDBACK_PROMPT,
-        messages: [
+      const feedback = await callClaude(
+        FEEDBACK_PROMPT,
+        [
           {
             role: "user",
             content: `以下の1on1会話ログを分析してフィードバックを提供してください。\n\nシナリオ：${SCENARIOS[scenario]?.name || scenario}\n\n会話ログ：\n${conversationLog}`,
           },
         ],
-      });
-
-      return res.status(200).json({
-        feedback: response.content[0].text,
-      });
+        1500
+      );
+      return res.status(200).json({ feedback });
     }
 
     return res.status(400).json({ error: "無効なアクションです" });
