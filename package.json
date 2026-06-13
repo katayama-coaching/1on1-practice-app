@@ -1,0 +1,11 @@
+{
+  "name": "1on1-practice-app",
+  "version": "1.0.0",
+  "description": "1on1練習専用アプリ - AIが部下役を演じる管理職向けトレーニングツール",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0"
+  }
+}
