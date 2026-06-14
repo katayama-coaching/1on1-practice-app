@@ -17,10 +17,11 @@ export default async function handler(req, res) {
 
     const existing = await sheets.spreadsheets.values.get({
       spreadsheetId,
-      range: 'A:A',
+      range: 'A:D',
     });
     const rows = existing.data.values || [];
-    if (rows.some(row => row[0] === email)) {
+    // メール＋アプリ名の組み合わせで重複チェック
+    if (rows.some(row => row[0] === email && row[3] === '1on1練習アプリ')) {
       return res.status(200).json({ added: false });
     }
 
