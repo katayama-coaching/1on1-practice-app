@@ -66,25 +66,24 @@ const SCENARIOS = {
   },
 };
 
-const FEEDBACK_PROMPT = `あなたは1on1コーチです。会話ログを分析し、以下の形式で簡潔にフィードバックしてください。
+const FEEDBACK_PROMPT = `あなたは1on1ミーティングのプロフェッショナルコーチです。
+以下の1on1会話ログを分析し、上司（マネージャー）へのフィードバックを提供してください。
 
-【総合評価】★X/5 - 一言コメント
+フィードバックの構成：
+1. **総合評価**（5段階: ★★★★★）と一言コメント
+2. **良かった点**（具体的な発言を引用して3点）
+3. **改善ポイント**（具体的に2〜3点）
+4. **次回への推奨アクション**（実践的な提案を2点）
+5. **スキルスコア**（各20点満点）
+   - 傾聴力
+   - 質問力
+   - 共感力
+   - 問題解決サポート力
+   - 心理的安全性の確保
 
-【良かった点】
-・（具体的な発言を引用して2点）
+日本語で、温かみがありながら建設的なフィードバックを提供してください。`;
 
-【改善ポイント】
-・（2点）
-
-【次回のアクション】
-・（1点）
-
-【スキルスコア（/10点）】
-傾聴力: X　質問力: X　共感力: X　心理的安全性: X
-
-日本語で簡潔に。`;
-
-async function callClaude(system, messages, maxTokens = 300) {
+async function callClaude(system, messages, maxTokens = 300, model = "claude-haiku-4-5-20251001") {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error("ANTHROPIC_API_KEY が設定されていません");
 
@@ -96,7 +95,7 @@ async function callClaude(system, messages, maxTokens = 300) {
       "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify({
-      model: "claude-sonnet-4-6",
+      model,
       max_tokens: maxTokens,
       system,
       messages,
@@ -124,7 +123,7 @@ export default async function handler(req, res) {
       const scenarioData = SCENARIOS[scenario];
       if (!scenarioData) return res.status(400).json({ error: "無効なシナリオです" });
 
-      const reply = await callClaude(scenarioData.systemPrompt, messages, 300);
+      const reply = await callClaude(scenarioData.systemPrompt, messages, 300, "claude-sonnet-4-6");
       return res.status(200).json({ reply });
     }
 
@@ -141,7 +140,7 @@ export default async function handler(req, res) {
             content: `以下の1on1会話ログを分析してフィードバックを提供してください。\n\nシナリオ：${SCENARIOS[scenario]?.name || scenario}\n\n会話ログ：\n${conversationLog}`,
           },
         ],
-        600
+        1500
       );
       return res.status(200).json({ feedback });
     }
