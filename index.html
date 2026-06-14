@@ -481,9 +481,51 @@
       padding: 2px 10px;
       border-radius: 10px;
     }
+
+    /* === LOGIN GATE === */
+    #login-gate { position:fixed; inset:0; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); z-index:999; display:flex; align-items:center; justify-content:center; padding:20px; }
+    .lg-box { background:white; border-radius:24px; padding:48px 40px; max-width:420px; width:100%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.2); }
+    .lg-badge { display:inline-block; background:var(--primary-light); color:var(--primary); font-size:12px; font-weight:700; padding:4px 14px; border-radius:20px; margin-bottom:20px; }
+    .lg-title { font-size:24px; font-weight:800; color:var(--gray-800); margin-bottom:8px; }
+    .lg-sub { font-size:14px; color:var(--gray-600); margin-bottom:28px; line-height:1.6; }
+    .lg-input { width:100%; border:2px solid var(--gray-200); border-radius:12px; padding:14px 16px; font-size:15px; font-family:inherit; outline:none; transition:border-color .2s; margin-bottom:10px; box-sizing:border-box; }
+    .lg-input:focus { border-color:var(--primary); }
+    .lg-err { font-size:12px; color:var(--danger); margin-bottom:10px; min-height:18px; }
+    .lg-btn { width:100%; background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:white; border:none; border-radius:12px; padding:14px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; margin-bottom:16px; transition:opacity .2s; }
+    .lg-btn:disabled { opacity:.5; cursor:not-allowed; }
+    .lg-note { font-size:11px; color:var(--gray-400); line-height:1.8; }
+    .lg-note a { color:var(--primary); text-decoration:none; }
+
+    /* === TRIAL / PAYMENT UI === */
+    .trial-bar { background:var(--primary-light); border:1px solid rgba(79,70,229,0.2); border-radius:12px; padding:12px 16px; margin-bottom:20px; font-size:13px; color:var(--primary); font-weight:600; }
+    .pay-section { background:var(--gray-50); border:2px solid var(--gray-200); border-radius:16px; padding:24px; margin-top:20px; text-align:center; }
+    .pay-section h3 { font-size:16px; font-weight:800; color:var(--gray-800); margin-bottom:6px; }
+    .pay-section p { font-size:13px; color:var(--gray-600); margin-bottom:16px; line-height:1.6; }
+    .pay-btn { display:block; width:100%; background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:white; border:none; border-radius:12px; padding:14px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; margin-bottom:10px; box-shadow:0 4px 15px rgba(79,70,229,0.4); }
+    .pay-btn:disabled { opacity:.5; cursor:not-allowed; }
+    .portal-btn { display:block; width:100%; background:white; border:1px solid var(--gray-200); color:var(--gray-600); border-radius:12px; padding:10px; font-size:13px; cursor:pointer; font-family:inherit; }
+    .expired-overlay { text-align:center; padding:40px 20px; }
+    .expired-overlay h3 { font-size:18px; font-weight:800; color:var(--gray-800); margin-bottom:8px; }
+    .expired-overlay p { font-size:14px; color:var(--gray-600); margin-bottom:20px; }
   </style>
 </head>
 <body>
+
+<!-- === LOGIN GATE === -->
+<div id="login-gate">
+  <div class="lg-box">
+    <div class="lg-badge">AI 1on1 トレーニング</div>
+    <h1 class="lg-title">1on1 練習アプリ</h1>
+    <p class="lg-sub">メールアドレスを入力して始めてください。<br>初めての方は1ヶ月間無料でお試しいただけます。</p>
+    <input type="email" id="lg-email" class="lg-input" placeholder="example@company.com" autocomplete="email">
+    <div class="lg-err" id="lg-err"></div>
+    <button class="lg-btn" id="lg-btn" onclick="doLogin()">続ける →</button>
+    <p class="lg-note">
+      1ヶ月間無料トライアル付き・月額¥980<br>
+      <a href="#">利用規約 / プライバシーポリシー</a>
+    </p>
+  </div>
+</div>
 
 <!-- === TOP SCREEN === -->
 <div class="app-container">
@@ -498,9 +540,20 @@
 
       <div class="scenario-grid" id="scenarioGrid"></div>
 
+      <div id="trial-bar" class="trial-bar" style="display:none"></div>
+
       <button class="start-btn" id="startBtn" disabled onclick="startSession()">
         練習を開始する →
       </button>
+
+      <div id="pay-section" class="pay-section" style="display:none">
+        <h3>🎉 無料トライアル終了</h3>
+        <p>引き続きご利用いただくには<br>サブスクリプション登録が必要です。</p>
+        <button class="pay-btn" id="pay-btn" onclick="startCheckout()">月額¥980で続ける</button>
+      </div>
+      <div id="portal-wrap" style="display:none;margin-top:12px;">
+        <button class="portal-btn" onclick="openPortal()">⚙️ 契約内容・解約・請求を管理する</button>
+      </div>
     </div>
   </div>
 
@@ -563,6 +616,103 @@
 </div>
 
 <script>
+// ===== ログイン・トライアル・決済 =====
+(function() {
+  var email = localStorage.getItem('user_email');
+  if (email) {
+    document.getElementById('login-gate').style.display = 'none';
+    initApp();
+  } else {
+    document.getElementById('app-container') && (document.getElementById('app-container').style.display = 'none');
+    var inp = document.getElementById('lg-email');
+    inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+    setTimeout(function() { inp.focus(); }, 100);
+  }
+  // Stripeリダイレクト後の処理
+  var params = new URLSearchParams(window.location.search);
+  var sessionId = params.get('session_id');
+  if (sessionId) {
+    fetch('/api/stripe/session?session_id=' + sessionId)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.customerId) {
+          localStorage.setItem('stripe_customer_id', data.customerId);
+          localStorage.removeItem('trial_start_date');
+        }
+        window.history.replaceState({}, '', '/');
+        initApp();
+      }).catch(function() { initApp(); });
+  }
+})();
+
+function doLogin() {
+  var email = document.getElementById('lg-email').value.trim();
+  var errEl = document.getElementById('lg-err');
+  var btn = document.getElementById('lg-btn');
+  errEl.textContent = '';
+  if (!email || !email.includes('@')) { errEl.textContent = '有効なメールアドレスを入力してください'; return; }
+  btn.disabled = true; btn.textContent = '確認中...';
+  fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }) })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.error) { errEl.textContent = data.error; btn.disabled = false; btn.textContent = '続ける →'; return; }
+      localStorage.setItem('user_email', email);
+      if (data.customerId) localStorage.setItem('stripe_customer_id', data.customerId);
+      fetch('/api/sheets/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email, status: data.status }) }).catch(function() {});
+      document.getElementById('login-gate').style.display = 'none';
+      initApp();
+    })
+    .catch(function() { errEl.textContent = '通信エラーが発生しました。再度お試しください。'; btn.disabled = false; btn.textContent = '続ける →'; });
+}
+
+function initApp() {
+  if (!localStorage.getItem('trial_start_date')) {
+    localStorage.setItem('trial_start_date', Date.now().toString());
+  }
+  var subscribed = !!localStorage.getItem('stripe_customer_id');
+  var elapsed = Date.now() - parseInt(localStorage.getItem('trial_start_date') || '0');
+  var trialActive = elapsed < 30 * 24 * 60 * 60 * 1000;
+
+  if (subscribed) {
+    document.getElementById('portal-wrap').style.display = 'block';
+  } else if (trialActive) {
+    var days = Math.ceil((30 * 24 * 60 * 60 * 1000 - elapsed) / (24 * 60 * 60 * 1000));
+    var bar = document.getElementById('trial-bar');
+    bar.style.display = 'block';
+    bar.textContent = '🎁 無料トライアル中 — あと ' + days + ' 日';
+  } else {
+    document.getElementById('pay-section').style.display = 'block';
+  }
+}
+
+function isAuthorized() {
+  if (localStorage.getItem('stripe_customer_id')) return true;
+  var elapsed = Date.now() - parseInt(localStorage.getItem('trial_start_date') || '0');
+  return elapsed < 30 * 24 * 60 * 60 * 1000;
+}
+
+function startCheckout() {
+  var btn = document.getElementById('pay-btn');
+  btn.disabled = true; btn.textContent = '処理中...';
+  fetch('/api/stripe/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.url) { window.location.href = data.url; }
+      else { alert('エラー: ' + (data.error || '不明')); btn.disabled = false; btn.textContent = '月額¥980で続ける'; }
+    })
+    .catch(function(e) { alert('通信エラー: ' + e.message); btn.disabled = false; btn.textContent = '月額¥980で続ける'; });
+}
+
+function openPortal() {
+  var customerId = localStorage.getItem('stripe_customer_id');
+  if (!customerId) { alert('お客様情報が見つかりません。'); return; }
+  fetch('/api/stripe/portal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customerId: customerId }) })
+    .then(function(r) { return r.json(); })
+    .then(function(data) { if (data.url) window.location.href = data.url; })
+    .catch(function() { alert('通信エラーが発生しました。'); });
+}
+// ===== ここまで =====
+
 const SCENARIOS = {
   burnout: {
     name: "燃え尽き・モチベーション低下",
@@ -641,6 +791,11 @@ function showScreen(name) {
 
 function startSession() {
   if (!currentScenario) return;
+  if (!isAuthorized()) {
+    document.getElementById('pay-section').style.display = 'block';
+    document.getElementById('pay-section').scrollIntoView({ behavior: 'smooth' });
+    return;
+  }
   const s = SCENARIOS[currentScenario];
 
   // Reset state
