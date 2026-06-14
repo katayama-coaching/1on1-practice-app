@@ -140,7 +140,7 @@ export default async function handler(req, res) {
             content: `以下の1on1会話ログを分析してフィードバックを提供してください。\n\nシナリオ：${SCENARIOS[scenario]?.name || scenario}\n\n会話ログ：\n${conversationLog}`,
           },
         ],
-        1500
+        2500
       );
       return res.status(200).json({ feedback });
     }
