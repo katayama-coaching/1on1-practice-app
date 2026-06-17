@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>特定商取引法に基づく表記 | 1on1基礎コーチング講座</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f6efe4;
+      --surface: rgba(255,255,255,0.9);
+      --line: rgba(23,37,47,0.12);
+      --ink: #18262e;
+      --muted: #5d6a71;
+      --accent: #d56b2d;
+      --accent-soft: #fde7d3;
+      --shadow: 0 18px 48px rgba(64,43,21,0.12);
+      --radius-xl: 26px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(180deg, #f8f1e7 0%, #f2e8d9 52%, #eedfca 100%);
+      color: var(--ink);
+      font-family: 'Noto Sans JP', sans-serif;
+      line-height: 1.9;
+      min-height: 100vh;
+      padding: 16px;
+    }
+    .shell { max-width: 980px; margin: 0 auto; }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 18px;
+      border-radius: 22px;
+      background: rgba(255,251,244,0.82);
+      border: 1px solid rgba(255,255,255,0.74);
+      box-shadow: 0 10px 26px rgba(73,54,30,0.08);
+    }
+    .brand { display: flex; align-items: center; gap: 14px; text-decoration: none; color: var(--ink); }
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #1b2d34 0%, #295547 100%);
+      color: #fff;
+      font-weight: 800;
+      font-size: 20px;
+    }
+    .brand strong { display: block; font-size: 18px; }
+    .brand span { display: block; margin-top: 4px; font-size: 12px; color: var(--muted); }
+    .back-link {
+      padding: 10px 14px;
+      border-radius: 999px;
+      text-decoration: none;
+      color: var(--ink);
+      background: rgba(255,255,255,0.78);
+      border: 1px solid rgba(23,37,47,0.08);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .page-head { text-align: center; padding: 48px 20px 28px; }
+    .page-head h1 {
+      font-family: 'Noto Serif JP', serif;
+      font-weight: 400;
+      font-size: clamp(24px, 4vw, 34px);
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+    .page-head p { font-size: 13px; color: var(--muted); letter-spacing: 0.08em; }
+    .tabs {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      padding: 8px;
+      border-radius: 18px;
+      background: rgba(255,251,244,0.8);
+      border: 1px solid rgba(255,255,255,0.74);
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 16px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .tab-btn.active { background: var(--accent); color: #fff; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .card {
+      background: rgba(255,251,244,0.86);
+      border: 1px solid rgba(255,255,255,0.74);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      margin-bottom: 18px;
+    }
+    .legal-table { width: 100%; border-collapse: collapse; }
+    .legal-table tr { border-bottom: 1px solid var(--line); }
+    .legal-table tr:last-child { border-bottom: none; }
+    .legal-table th {
+      width: 34%;
+      text-align: left;
+      vertical-align: top;
+      padding: 16px 14px;
+      font-size: 13px;
+      color: var(--accent);
+      background: rgba(253,231,211,0.6);
+    }
+    .legal-table td { padding: 16px 14px; vertical-align: top; font-size: 14px; }
+    .prose h2 {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 17px;
+      color: var(--accent);
+      margin: 28px 0 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    .prose h2:first-child { margin-top: 0; }
+    .prose p { margin-bottom: 14px; font-size: 14px; }
+    .prose ul { list-style: none; padding-left: 0; margin: 8px 0 14px; }
+    .prose li { position: relative; padding-left: 16px; margin-bottom: 6px; font-size: 14px; }
+    .prose li::before { content: '・'; position: absolute; left: 0; color: var(--accent); }
+    .notice {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--accent-soft);
+      color: #7a451f;
+      font-size: 13px;
+    }
+    .updated { margin-top: 24px; padding-top: 14px; border-top: 1px solid var(--line); text-align: right; color: var(--muted); font-size: 12px; }
+    footer { text-align: center; color: var(--muted); font-size: 12px; padding: 10px 0 24px; }
+    a { color: var(--accent); }
+    @media (max-width: 700px) {
+      .topbar { flex-direction: column; align-items: stretch; }
+      .legal-table th, .legal-table td { display: block; width: 100%; }
+      .legal-table th { padding-bottom: 8px; }
+      .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="topbar">
+      <a href="/" class="brand">
+        <div class="brand-mark">1</div>
+        <div>
+          <strong>1on1基礎コーチング講座</strong>
+          <span>AI実践アプリ</span>
+        </div>
+      </a>
+      <a href="/" class="back-link">← サービストップへ戻る</a>
+    </div>
+
+    <div class="page-head">
+      <h1>特定商取引法に基づく表記</h1>
+      <p>Legal Information / Terms / Privacy</p>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="showTab('tokushoho', this)">特定商取引法</button>
+      <button class="tab-btn" onclick="showTab('terms', this)">利用規約</button>
+      <button class="tab-btn" onclick="showTab('privacy', this)">プライバシーポリシー</button>
+      <button class="tab-btn" onclick="showTab('subscription', this)">サブスク規約</button>
+    </div>
+
+    <section id="tokushoho" class="tab-panel active">
+      <div class="card">
+        <table class="legal-table">
+          <tr><th>販売事業者名</th><td>クリエートプラス</td></tr>
+          <tr><th>運営統括責任者</th><td>片山晋</td></tr>
+          <tr><th>所在地</th><td>請求があった場合に遅滞なく開示いたします。</td></tr>
+          <tr><th>電話番号</th><td>請求があった場合に遅滞なく開示いたします。</td></tr>
+          <tr><th>メールアドレス</th><td><a href="mailto:ookura6882@gmail.com">ookura6882@gmail.com</a></td></tr>
+          <tr><th>販売URL</th><td><a href="https://1on1-practice-app.vercel.app/">https://1on1-practice-app.vercel.app/</a></td></tr>
+          <tr><th>サービス名</th><td>1on1基礎コーチング講座</td></tr>
+          <tr><th>サービス内容</th><td>管理職向けの1on1基礎講座、AI対話練習、本番前準備、本番後ふり返りを提供するデジタルサービス</td></tr>
+          <tr><th>販売価格</th><td>月額 980円（税込）</td></tr>
+          <tr><th>商品代金以外に必要な料金</th><td>インターネット接続料金、通信料金等はお客様のご負担となります。</td></tr>
+          <tr><th>支払方法</th><td>クレジットカード決済（Stripe）</td></tr>
+          <tr><th>支払時期</th><td>初回申込み時に決済され、以後は契約更新日に応じて毎月自動課金されます。</td></tr>
+          <tr><th>サービス提供時期</th><td>登録手続き完了後、直ちにご利用いただけます。</td></tr>
+          <tr><th>無料トライアル</th><td>初回登録日から1か月間は無料で利用できます。無料期間終了後も継続利用する場合は、有料プランへの申込みが必要です。</td></tr>
+          <tr><th>契約期間・自動更新</th><td>月額契約です。解約手続きが完了しない限り、1か月ごとに自動更新されます。</td></tr>
+          <tr><th>解約方法</th><td>サービス内の「契約内容・解約・請求を管理する」ボタンから、次回更新日の前日までにStripeのカスタマーポータル上で解約手続きを行ってください。解約後も、既に支払済みの利用期間満了日までは利用できます。</td></tr>
+          <tr><th>返品・返金</th><td>デジタルサービスの性質上、申込み完了後の返品、返金、日割り返金には対応しておりません。</td></tr>
+          <tr><th>動作環境</th><td>最新の主要ブラウザ（Google Chrome、Safari、Microsoft Edge等）での利用を推奨します。</td></tr>
+          <tr><th>表現およびサービスに関する注意書き</th><td>本サービスは、1on1の実施準備や管理職の学習を支援するものであり、特定の成果、組織改善、離職防止等を保証するものではありません。</td></tr>
+        </table>
+        <div class="notice">住所・電話番号の開示請求は、上記メールアドレス宛にご連絡ください。特定商取引法に基づき、遅滞なく開示いたします。</div>
+        <div class="updated">最終更新日：2026年6月17日</div>
+      </div>
+    </section>
+
+    <section id="terms" class="tab-panel">
+      <div class="card prose">
+        <p>この利用規約（以下「本規約」といいます）は、クリエートプラス（以下「当方」といいます）が提供する「1on1基礎コーチング講座」（以下「本サービス」といいます）の利用条件を定めるものです。利用者は、本サービスを利用することにより、本規約に同意したものとみなされます。</p>
+        <h2>第1条（適用）</h2>
+        <p>本規約は、本サービスの利用に関する当方と利用者との間の一切の関係に適用されます。</p>
+        <h2>第2条（サービス内容）</h2>
+        <p>本サービスは、管理職が1on1の基本を学び、AIとの対話練習や事前準備、事後ふり返りを通じて1on1の質を高めることを支援するデジタルサービスです。</p>
+        <h2>第3条（登録情報）</h2>
+        <p>利用者は、正確かつ最新の情報を登録するものとします。虚偽情報の登録により当方または第三者に損害が生じた場合、利用者が責任を負います。</p>
+        <h2>第4条（禁止事項）</h2>
+        <ul>
+          <li>法令または公序良俗に違反する行為</li>
+          <li>本サービスの運営を妨害する行為</li>
+          <li>第三者の権利、利益、名誉、プライバシーを侵害する行為</li>
+          <li>不正アクセス、リバースエンジニアリング、過度な負荷をかける行為</li>
+          <li>本サービスの回答をそのまま専門助言として利用し、第三者に誤認させる行為</li>
+          <li>その他、当方が不適切と判断する行為</li>
+        </ul>
+        <h2>第5条（知的財産権）</h2>
+        <p>本サービスに関するプログラム、デザイン、文章その他一切の知的財産権は当方または正当な権利者に帰属します。</p>
+        <h2>第6条（AI回答に関する注意）</h2>
+        <p>本サービスはAIを用いて回答や練習フィードバックを生成します。回答内容には不正確または不適切な情報が含まれる可能性があります。利用者は、自らの判断と責任において本サービスを利用するものとします。</p>
+        <h2>第7条（免責）</h2>
+        <p>本サービスは、医療、法律、労務、投資その他専門家による助言を提供するものではありません。また、本サービスの利用による成果、評価改善、離職率低下、組織改善等について当方は保証しません。</p>
+        <h2>第8条（サービスの変更・停止）</h2>
+        <p>当方は、保守、障害対応、外部サービスの変更その他の理由により、事前通知なく本サービスの全部または一部を変更、停止または終了できるものとします。</p>
+        <h2>第9条（利用停止）</h2>
+        <p>利用者が本規約に違反した場合、当方は事前通知なく本サービスの利用を停止または登録を解除できるものとします。</p>
+        <h2>第10条（規約変更）</h2>
+        <p>当方は、必要と判断した場合、本規約を変更できます。重要な変更がある場合は、本サービス上または当方が適当と判断する方法で周知します。</p>
+        <h2>第11条（準拠法・管轄）</h2>
+        <p>本規約は日本法に準拠します。本サービスに関して紛争が生じた場合は、当方所在地を管轄する裁判所を第一審の専属的合意管轄とします。</p>
+        <div class="updated">最終更新日：2026年6月17日</div>
+      </div>
+    </section>
+
+    <section id="privacy" class="tab-panel">
+      <div class="card prose">
+        <p>クリエートプラス（以下「当方」といいます）は、本サービスにおいて取得する利用者情報を、以下の方針に基づき適切に取り扱います。</p>
+        <h2>1. 取得する情報</h2>
+        <ul>
+          <li>メールアドレス</li>
+          <li>課金・契約状態に関する情報</li>
+          <li>本サービスで入力されたテキスト情報</li>
+          <li>講座進捗、練習履歴、ふり返りメモ等の利用状況</li>
+          <li>お問い合わせ内容</li>
+        </ul>
+        <h2>2. 利用目的</h2>
+        <ul>
+          <li>本サービスの提供、本人確認、課金管理のため</li>
+          <li>本サービスの改善、品質向上、不具合対応のため</li>
+          <li>お問い合わせ対応のため</li>
+          <li>不正利用防止、セキュリティ対応のため</li>
+          <li>法令遵守その他正当な業務遂行のため</li>
+        </ul>
+        <h2>3. 外部サービスの利用</h2>
+        <p>当方は、サービス提供のために以下の外部サービスを利用することがあります。</p>
+        <ul>
+          <li>OpenAI: AI応答生成、フィードバック生成</li>
+          <li>Stripe: 決済処理、契約管理</li>
+          <li>Google: スプレッドシート等を用いた運営管理</li>
+          <li>Vercel: アプリのホスティングおよび配信</li>
+        </ul>
+        <p>これらの外部事業者に対し、サービス提供に必要な範囲で情報を提供する場合があります。</p>
+        <h2>4. 第三者提供</h2>
+        <p>当方は、法令に基づく場合を除き、本人の同意なく個人情報を第三者に提供しません。ただし、決済、AI応答生成、運営管理等の委託先への提供はこの限りではありません。</p>
+        <h2>5. 安全管理措置</h2>
+        <p>当方は、不正アクセス、漏えい、改ざん、滅失等を防止するため、合理的な安全管理措置を講じるよう努めます。</p>
+        <h2>6. 保有期間</h2>
+        <p>取得した情報は、利用目的達成に必要な期間または法令で要求される期間、保有することがあります。</p>
+        <h2>7. 開示・訂正・削除等の請求</h2>
+        <p>利用者は、法令の定めに従い、自身の個人情報について開示、訂正、利用停止、削除等を求めることができます。希望する場合は、下記お問い合わせ先までご連絡ください。</p>
+        <h2>8. お問い合わせ窓口</h2>
+        <p><a href="mailto:ookura6882@gmail.com">ookura6882@gmail.com</a></p>
+        <div class="updated">最終更新日：2026年6月17日</div>
+      </div>
+    </section>
+
+    <section id="subscription" class="tab-panel">
+      <div class="card prose">
+        <h2>1. 月額料金</h2>
+        <p>本サービスの利用料金は月額980円（税込）です。</p>
+        <h2>2. 無料トライアル</h2>
+        <p>初回登録日から1か月間は無料で利用できます。無料期間終了後も継続して利用する場合は、有料プランへの登録が必要です。</p>
+        <h2>3. 課金開始時期</h2>
+        <p>有料プランに申込みした時点で決済が実行され、その後は1か月ごとに自動更新されます。</p>
+        <h2>4. 自動更新</h2>
+        <p>サブスクリプションは、利用者が所定の方法で解約しない限り、自動的に更新されます。</p>
+        <h2>5. 解約</h2>
+        <p>解約は、次回更新日の前日までにStripeのカスタマーポータル上で手続きしてください。期限までに手続きが完了しない場合、次回分の料金が発生します。</p>
+        <h2>6. 解約後の利用</h2>
+        <p>解約後も、既に支払済みの利用期間満了日までは利用できます。</p>
+        <h2>7. 返金</h2>
+        <p>支払済み料金の返金、日割り返金は行いません。</p>
+        <h2>8. 価格改定</h2>
+        <p>料金を改定する場合は、合理的な期間をおいて事前に本サービス上または適当な方法で通知します。</p>
+        <div class="updated">最終更新日：2026年6月17日</div>
+      </div>
+    </section>
+
+    <footer>&copy; 2026 クリエートプラス / 1on1基礎コーチング講座</footer>
+  </div>
+
+  <script>
+    function showTab(id, btn) {
+      document.querySelectorAll('.tab-panel').forEach(function(el) { el.classList.remove('active'); });
+      document.querySelectorAll('.tab-btn').forEach(function(el) { el.classList.remove('active'); });
+      document.getElementById(id).classList.add('active');
+      btn.classList.add('active');
+    }
+    var hash = window.location.hash.replace('#', '');
+    if (hash && document.getElementById(hash)) {
+      var idx = ['tokushoho','terms','privacy','subscription'].indexOf(hash);
+      if (idx >= 0) {
+        showTab(hash, document.querySelectorAll('.tab-btn')[idx]);
+      }
+    }
+  </script>
+</body>
+</html>
