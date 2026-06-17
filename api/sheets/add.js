@@ -1,5 +1,7 @@
 import { google } from 'googleapis';
 
+const APP_LABEL = '1on1基礎コーチング講座';
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -20,8 +22,8 @@ export default async function handler(req, res) {
       range: 'A:D',
     });
     const rows = existing.data.values || [];
-    // メール＋アプリ名の組み合わせで重複チェック
-    if (rows.some(row => row[0] === email && row[3] === '1on1練習アプリ')) {
+
+    if (rows.some((row) => row[0] === email && row[3] === APP_LABEL)) {
       return res.status(200).json({ added: false });
     }
 
@@ -30,7 +32,7 @@ export default async function handler(req, res) {
       spreadsheetId,
       range: 'A:D',
       valueInputOption: 'RAW',
-      requestBody: { values: [[email, now, status || 'trial', '1on1練習アプリ']] },
+      requestBody: { values: [[email, now, status || 'trial', APP_LABEL]] },
     });
 
     return res.status(200).json({ added: true });
