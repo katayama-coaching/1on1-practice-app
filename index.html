@@ -3,983 +3,1654 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>1on1 練習アプリ | AIで部下との対話を磨く</title>
+  <title>1on1基礎コーチング講座 | AI実践アプリ</title>
+  <meta name="description" content="1on1で何を聞けばいいか迷う管理職向け。10回講座、AI部下との練習、本番前準備、ふり返りを一体化した実践アプリ。">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    #vercel-live-feedback, vercel-live-feedback { display: none !important; }
-
     :root {
-      --primary: #4F46E5;
-      --primary-light: #EEF2FF;
-      --primary-dark: #3730A3;
-      --success: #10B981;
-      --warning: #F59E0B;
-      --danger: #EF4444;
-      --gray-50: #F9FAFB;
-      --gray-100: #F3F4F6;
-      --gray-200: #E5E7EB;
-      --gray-400: #9CA3AF;
-      --gray-600: #4B5563;
-      --gray-800: #1F2937;
-      --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+      --bg: #f6efe4;
+      --bg2: #f1e3d0;
+      --surface: rgba(255,255,255,0.78);
+      --card: rgba(255,255,255,0.9);
+      --line: rgba(23,37,47,0.1);
+      --ink: #18262e;
+      --muted: #5d6a71;
+      --accent: #d56b2d;
+      --accent-dark: #b5541c;
+      --accent-soft: #fde7d3;
+      --green: #285547;
+      --green-soft: #e0ede7;
+      --warn: #9a4f2a;
+      --shadow: 0 18px 48px rgba(64,43,21,0.12);
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
     }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body {
-      font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(255,223,191,0.9), transparent 25%),
+        radial-gradient(circle at top right, rgba(173,210,194,0.25), transparent 22%),
+        linear-gradient(180deg, #f8f1e7 0%, #f2e8d9 48%, #eedfca 100%);
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      line-height: 1.7;
+      padding: 16px;
     }
-
-    .app-container {
+    button, input, select, textarea { font: inherit; }
+    button { border: none; cursor: pointer; }
+    input, select, textarea {
       width: 100%;
-      max-width: 860px;
-    }
-
-    /* === SCREENS === */
-    .screen { display: none; }
-    .screen.active { display: block; }
-
-    /* === TOP SCREEN === */
-    .top-card {
-      background: white;
-      border-radius: 24px;
-      padding: 48px 40px;
-      box-shadow: var(--shadow-lg);
-      text-align: center;
-    }
-
-    .app-badge {
-      display: inline-block;
-      background: var(--primary-light);
-      color: var(--primary);
-      font-size: 12px;
-      font-weight: 700;
-      padding: 4px 14px;
-      border-radius: 20px;
-      letter-spacing: 0.05em;
-      margin-bottom: 20px;
-    }
-
-    .app-title {
-      font-size: 32px;
-      font-weight: 800;
-      color: var(--gray-800);
-      margin-bottom: 12px;
-      line-height: 1.2;
-    }
-
-    .app-subtitle {
-      font-size: 16px;
-      color: var(--gray-600);
-      margin-bottom: 40px;
-      line-height: 1.6;
-    }
-
-    .scenario-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-      margin-bottom: 32px;
-    }
-
-    .scenario-card {
-      background: var(--gray-50);
-      border: 2px solid var(--gray-200);
-      border-radius: 16px;
-      padding: 20px;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-align: left;
-    }
-
-    .scenario-card:hover {
-      border-color: var(--primary);
-      background: var(--primary-light);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
-    }
-
-    .scenario-card.selected {
-      border-color: var(--primary);
-      background: var(--primary-light);
-    }
-
-    .scenario-icon {
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
-
-    .scenario-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--gray-800);
-      margin-bottom: 4px;
-    }
-
-    .scenario-desc {
-      font-size: 12px;
-      color: var(--gray-600);
-      line-height: 1.5;
-    }
-
-    .start-btn {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-      color: white;
-      border: none;
+      border: 1px solid var(--line);
       border-radius: 14px;
-      padding: 16px 48px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 4px 15px rgba(79,70,229,0.4);
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.82);
+      color: var(--ink);
     }
-
-    .start-btn:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(79,70,229,0.5);
-    }
-
-    .start-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    /* === CHAT SCREEN === */
-    .chat-wrapper {
-      background: white;
-      border-radius: 24px;
-      overflow: hidden;
-      box-shadow: var(--shadow-lg);
-      display: flex;
-      flex-direction: column;
-      height: 90vh;
-      max-height: 760px;
-    }
-
-    .chat-header {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-      padding: 16px 24px;
+    textarea { min-height: 110px; resize: vertical; }
+    .hidden { display: none !important; }
+    .app-shell { width: min(1320px, 100%); margin: 0 auto; }
+    .topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 16px;
+      padding: 16px 18px;
+      border-radius: 22px;
+      background: rgba(255,251,244,0.76);
+      border: 1px solid rgba(255,255,255,0.74);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 26px rgba(73,54,30,0.08);
+      position: sticky;
+      top: 10px;
+      z-index: 10;
     }
-
-    .chat-header-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #1b2d34 0%, #295547 100%);
+      color: #fff;
+      font-weight: 800;
+      font-size: 20px;
     }
-
-    .persona-avatar {
-      width: 44px;
-      height: 44px;
-      background: rgba(255,255,255,0.2);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
+    .brand h1 { font-size: 20px; line-height: 1.2; }
+    .brand p { margin-top: 4px; font-size: 13px; color: var(--muted); }
+    .status-strip { display: flex; flex-wrap: wrap; gap: 10px; }
+    .pill {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.74);
+      border: 1px solid rgba(23,37,47,0.08);
+      font-size: 13px;
+      color: var(--muted);
     }
-
-    .persona-info .name {
-      font-size: 15px;
+    .pill strong { color: var(--ink); }
+    .layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 18px;
+      margin-top: 18px;
+      align-items: start;
+    }
+    .sidebar, .main-panel {
+      background: rgba(255,251,244,0.78);
+      border: 1px solid rgba(255,255,255,0.74);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius-xl);
+    }
+    .sidebar {
+      padding: 18px;
+      position: sticky;
+      top: 92px;
+    }
+    .main-panel { padding: 20px; }
+    .sidebar h2 { font-size: 18px; margin-bottom: 8px; }
+    .sidebar p { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+    .nav-list, .course-list, .score-grid, .prep-list, .timeline-list { display: grid; gap: 10px; }
+    .nav-button, .course-button, .option-button, .primary-button, .secondary-button, .ghost-button, .send-btn, .lg-btn, .portal-btn {
+      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+    .nav-button:hover, .course-button:hover, .option-button:hover, .primary-button:hover, .secondary-button:hover, .ghost-button:hover, .send-btn:hover, .lg-btn:hover, .portal-btn:hover { transform: translateY(-1px); }
+    .nav-button {
+      text-align: left;
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.62);
+      border: 1px solid rgba(23,37,47,0.08);
+      color: var(--ink);
       font-weight: 700;
-      color: white;
     }
-
-    .persona-info .role {
-      font-size: 12px;
-      color: rgba(255,255,255,0.75);
+    .nav-button small { display: block; margin-top: 4px; color: var(--muted); font-weight: 500; }
+    .nav-button.active {
+      background: linear-gradient(135deg, #1c3138 0%, #295547 100%);
+      color: #fff;
+      box-shadow: 0 14px 24px rgba(41,85,71,0.24);
     }
-
-    .header-actions {
+    .nav-button.active small { color: rgba(255,255,255,0.74); }
+    .course-list { margin-top: 14px; max-height: 52vh; overflow: auto; padding-right: 4px; }
+    .course-button {
+      width: 100%;
+      text-align: left;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.66);
+      border: 1px solid rgba(23,37,47,0.08);
+      display: grid;
+      grid-template-columns: 34px 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+    .course-button.active { border-color: rgba(41,85,71,0.34); background: #f6fbf8; }
+    .course-no {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: var(--accent-soft);
+      color: var(--warn);
+      font-weight: 800;
+      font-size: 13px;
+    }
+    .course-copy strong { display: block; font-size: 14px; }
+    .course-copy small, .course-state, .muted, small { color: var(--muted); font-size: 12px; }
+    .tab-section { display: none; }
+    .tab-section.active { display: block; }
+    .panel-head {
       display: flex;
-      gap: 8px;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 18px;
     }
-
-    .header-btn {
-      background: rgba(255,255,255,0.2);
-      border: 1px solid rgba(255,255,255,0.3);
-      color: white;
-      border-radius: 8px;
-      padding: 6px 14px;
+    .panel-head h2 { font-size: 30px; line-height: 1.25; margin-top: 12px; }
+    .panel-head p { color: var(--muted); margin-top: 12px; max-width: 760px; }
+    .badge, .message-label, .chip, .tag, .turn-counter {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 999px;
       font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
+      font-weight: 800;
     }
-
-    .header-btn:hover { background: rgba(255,255,255,0.3); }
-
-    .turn-counter {
-      background: rgba(255,255,255,0.15);
-      border-radius: 8px;
-      padding: 4px 12px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.9);
+    .badge { background: var(--accent-soft); color: var(--warn); }
+    .message-label {
+      padding: 6px 10px;
+      font-size: 11px;
+      color: var(--muted);
+      background: rgba(23,37,47,0.06);
+      margin-bottom: 10px;
     }
-
-    .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 24px;
+    .chip, .tag { background: rgba(255,255,255,0.82); border: 1px solid rgba(23,37,47,0.08); color: var(--ink); }
+    .turn-counter { background: rgba(23,37,47,0.06); color: var(--muted); }
+    .hero-grid, .grid-2, .grid-4, .analysis-columns, .form-grid, .practice-shell, .option-grid {
+      display: grid;
+      gap: 16px;
+    }
+    .hero-grid, .grid-2, .analysis-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .practice-shell { grid-template-columns: 380px 1fr; }
+    .option-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .section-card, .mini-card, .course-card, .note-block, .analysis-card {
+      background: rgba(255,255,255,0.72);
+      border: 1px solid rgba(23,37,47,0.08);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 10px 30px rgba(69,49,25,0.06);
+    }
+    .hero-banner {
+      min-height: 250px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      background: var(--gray-50);
+      justify-content: space-between;
+      background: linear-gradient(135deg, rgba(27,45,52,0.96) 0%, rgba(41,85,71,0.96) 100%);
+      color: #fff;
     }
-
-    .message {
+    .hero-banner h3 { font-size: 32px; line-height: 1.25; }
+    .hero-banner p { margin-top: 14px; color: rgba(255,255,255,0.82); }
+    .action-row, .chip-row, .tag-row, .practice-toolbar, .header-actions, .input-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .primary-button, .secondary-button, .ghost-button, .lg-btn, .portal-btn {
+      border-radius: 14px;
+      padding: 14px 18px;
+      font-weight: 800;
+    }
+    .primary-button, .lg-btn, .send-btn {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: white;
+      box-shadow: 0 12px 28px rgba(213,107,45,0.28);
+    }
+    .secondary-button {
+      background: rgba(255,255,255,0.14);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .ghost-button, .portal-btn {
+      background: rgba(255,255,255,0.82);
+      color: var(--ink);
+      border: 1px solid rgba(23,37,47,0.08);
+    }
+    .stat-value { display: block; font-size: 28px; font-weight: 900; margin-bottom: 8px; }
+    .detail-list, .signal-list, .suggestion-list, .warning-list { display: grid; gap: 10px; margin-top: 12px; }
+    .detail-item, .signal-item, .suggestion-item, .warning-item, .timeline-item, .prep-item {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 12px;
+      align-items: start;
+      background: rgba(255,255,255,0.64);
+      border-radius: 16px;
+      padding: 12px;
+    }
+    .bullet {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: var(--accent-soft);
+      color: var(--warn);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .message-box, .employee-box, .coach-box {
+      background: rgba(255,255,255,0.78);
+      border: 1px solid rgba(23,37,47,0.08);
+      border-radius: 18px;
+      padding: 16px;
+    }
+    .employee-box { background: #fff8f1; }
+    .coach-box { background: #f5fbf8; }
+    .option-button {
+      text-align: left;
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(23,37,47,0.08);
+      background: rgba(255,255,255,0.78);
+      color: var(--ink);
+    }
+    .option-button.selected {
+      border-color: rgba(41,85,71,0.34);
+      background: #f6fbf8;
+      box-shadow: 0 10px 24px rgba(41,85,71,0.12);
+    }
+    .score-item {
+      display: grid;
+      grid-template-columns: 64px 1fr 56px;
+      gap: 10px;
+      align-items: center;
+      background: rgba(255,255,255,0.64);
+      border-radius: 14px;
+      padding: 12px;
+    }
+    .bar {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(23,37,47,0.08);
+      overflow: hidden;
+    }
+    .bar span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent) 0%, #ef9a5e 100%);
+    }
+    .chat-box {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 620px;
+    }
+    .chat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(23,37,47,0.08);
+    }
+    .chat-header-left { display: flex; gap: 12px; align-items: center; }
+    .persona-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--accent-soft);
+      font-size: 24px;
+    }
+    .chat-log {
+      display: grid;
+      gap: 10px;
+      max-height: 420px;
+      overflow: auto;
+      padding: 16px 4px 4px;
+      align-content: start;
+    }
+    .chat-message {
       display: flex;
       gap: 10px;
-      max-width: 78%;
-      animation: fadeIn 0.3s ease;
+      max-width: 84%;
+      animation: fadeIn 0.2s ease;
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .message.user { align-self: flex-end; flex-direction: row-reverse; }
-
+    .chat-message.user { margin-left: auto; flex-direction: row-reverse; }
     .msg-avatar {
       width: 36px;
       height: 36px;
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
+      display: grid;
+      place-items: center;
       flex-shrink: 0;
+      background: rgba(23,37,47,0.08);
     }
-
-    .message.assistant .msg-avatar { background: var(--primary-light); }
-    .message.user .msg-avatar { background: #DCFCE7; }
-
+    .chat-message.user .msg-avatar { background: #dff0e8; }
     .msg-bubble {
-      padding: 12px 16px;
+      padding: 12px 14px;
       border-radius: 18px;
+      background: rgba(255,255,255,0.9);
+      border: 1px solid rgba(23,37,47,0.08);
       font-size: 14px;
-      line-height: 1.6;
+      white-space: pre-wrap;
     }
-
-    .message.assistant .msg-bubble {
-      background: white;
-      color: var(--gray-800);
-      border-bottom-left-radius: 4px;
-      box-shadow: var(--shadow);
-    }
-
-    .message.user .msg-bubble {
-      background: var(--primary);
+    .chat-message.user .msg-bubble {
+      background: linear-gradient(135deg, #1c3138 0%, #295547 100%);
       color: white;
-      border-bottom-right-radius: 4px;
     }
-
-    .typing-indicator {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
+    .system-msg { text-align: center; font-size: 12px; color: var(--muted); padding: 6px 0; }
+    .typing-indicator { display: flex; gap: 10px; align-items: center; }
     .typing-dots {
-      display: flex;
+      display: inline-flex;
       gap: 4px;
-      padding: 12px 16px;
-      background: white;
+      background: rgba(255,255,255,0.88);
+      border: 1px solid rgba(23,37,47,0.08);
       border-radius: 18px;
-      border-bottom-left-radius: 4px;
-      box-shadow: var(--shadow);
+      padding: 12px 14px;
     }
-
     .typing-dots span {
       width: 8px;
       height: 8px;
-      background: var(--gray-400);
       border-radius: 50%;
+      background: rgba(23,37,47,0.28);
       animation: bounce 1.4s infinite;
     }
-
     .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
     .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-
-    @keyframes bounce {
-      0%, 60%, 100% { transform: translateY(0); }
-      30% { transform: translateY(-6px); }
-    }
-
-    .chat-input-area {
-      padding: 16px 20px;
-      background: white;
-      border-top: 1px solid var(--gray-200);
-    }
-
-    .input-row {
-      display: flex;
-      gap: 10px;
-      align-items: flex-end;
-    }
-
-    .chat-textarea {
-      flex: 1;
-      border: 2px solid var(--gray-200);
-      border-radius: 14px;
-      padding: 12px 16px;
-      font-size: 14px;
-      font-family: inherit;
-      resize: none;
-      outline: none;
-      transition: border-color 0.2s;
-      line-height: 1.5;
-      max-height: 100px;
-      min-height: 44px;
-    }
-
-    .chat-textarea:focus { border-color: var(--primary); }
-
+    .chat-input-wrap { padding-top: 12px; border-top: 1px solid rgba(23,37,47,0.08); }
+    .chat-textarea { min-height: 48px; max-height: 120px; resize: none; }
     .send-btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      width: 48px;
-      height: 48px;
-      cursor: pointer;
-      transition: all 0.2s;
+      width: 50px;
+      height: 50px;
+      border-radius: 14px;
+      font-size: 20px;
+      font-weight: 800;
+    }
+    .feedback-panel { margin-top: 18px; }
+    .feedback-content {
+      white-space: pre-wrap;
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--ink);
+    }
+    .feedback-content strong { font-weight: 800; }
+    .feedback-loading { text-align: center; padding: 30px 12px; color: var(--muted); }
+    .spinner {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 4px solid rgba(23,37,47,0.08);
+      border-top-color: var(--accent);
+      margin: 0 auto 14px;
+      animation: spin 0.8s linear infinite;
+    }
+    .trial-bar, .pay-section, .footer-note {
+      margin-top: 16px;
+      border-radius: 18px;
+      padding: 16px 18px;
+    }
+    .trial-bar {
+      background: rgba(214,238,227,0.94);
+      border: 1px solid rgba(41,85,71,0.14);
+      color: var(--green);
+      font-weight: 800;
+    }
+    .pay-section {
+      background: #fff6f2;
+      border: 1px solid rgba(155,79,41,0.16);
+      text-align: center;
+    }
+    .pay-section h3 { margin-bottom: 8px; }
+    .note-block { padding: 16px; }
+    .footer-note {
+      background: rgba(255,255,255,0.64);
+      border: 1px solid rgba(23,37,47,0.08);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    #login-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: linear-gradient(135deg, #1b2a31 0%, #295547 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
-      flex-shrink: 0;
+      padding: 20px;
     }
-
-    .send-btn:hover:not(:disabled) { background: var(--primary-dark); transform: scale(1.05); }
-    .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .input-hint {
-      font-size: 11px;
-      color: var(--gray-400);
-      margin-top: 6px;
+    .lg-box {
+      width: min(100%, 460px);
+      background: #fffaf2;
+      border-radius: 28px;
+      padding: 40px 32px;
+      box-shadow: 0 26px 70px rgba(0,0,0,0.22);
       text-align: center;
     }
-
-    /* === FEEDBACK SCREEN === */
-    .feedback-wrapper {
-      background: white;
-      border-radius: 24px;
-      overflow: hidden;
-      box-shadow: var(--shadow-lg);
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    .feedback-header {
-      background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
-      padding: 28px 32px;
-      text-align: center;
-    }
-
-    .feedback-header h2 {
-      font-size: 22px;
-      font-weight: 800;
-      color: white;
-      margin-bottom: 6px;
-    }
-
-    .feedback-header p {
-      font-size: 14px;
-      color: rgba(255,255,255,0.85);
-    }
-
-    .feedback-body {
-      padding: 32px;
-    }
-
-    .feedback-loading {
-      text-align: center;
-      padding: 48px;
-    }
-
-    .spinner {
-      width: 48px;
-      height: 48px;
-      border: 4px solid var(--gray-200);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 16px;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .feedback-content {
-      white-space: pre-wrap;
-      line-height: 1.8;
-      color: var(--gray-800);
-      font-size: 14px;
-    }
-
-    .feedback-content h1, .feedback-content h2, .feedback-content h3 {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--gray-800);
-      margin: 20px 0 8px;
-    }
-
-    .feedback-actions {
-      display: flex;
-      gap: 12px;
-      padding: 24px 32px;
-      border-top: 1px solid var(--gray-200);
-    }
-
-    .action-btn {
-      flex: 1;
-      padding: 14px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.2s;
-      border: none;
-    }
-
-    .action-btn.primary {
-      background: var(--primary);
-      color: white;
-    }
-
-    .action-btn.secondary {
-      background: var(--gray-100);
-      color: var(--gray-800);
-    }
-
-    .action-btn:hover { opacity: 0.85; transform: translateY(-1px); }
-
-    /* System message */
-    .system-msg {
-      text-align: center;
+    .lg-badge {
+      display: inline-flex;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--warn);
       font-size: 12px;
-      color: var(--gray-400);
-      padding: 4px 0;
+      font-weight: 800;
     }
-
-    .scenario-tag {
-      display: inline-block;
-      background: var(--primary-light);
-      color: var(--primary);
-      font-size: 11px;
-      font-weight: 600;
-      padding: 2px 10px;
-      border-radius: 10px;
+    .lg-title { font-size: 30px; line-height: 1.2; margin: 16px 0 10px; }
+    .lg-sub { color: var(--muted); font-size: 14px; margin-bottom: 22px; }
+    .lg-input { margin-bottom: 10px; }
+    .lg-err { color: #b42318; min-height: 18px; font-size: 12px; margin-bottom: 8px; }
+    .lg-note { font-size: 11px; color: var(--muted); margin-top: 14px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes bounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 1120px) {
+      .layout, .practice-shell { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+      .grid-4 { grid-template-columns: repeat(2, minmax(0,1fr)); }
     }
-
-    /* === LOGIN GATE === */
-    #login-gate { position:fixed; inset:0; background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); z-index:999; display:flex; align-items:center; justify-content:center; padding:20px; }
-    .lg-box { background:white; border-radius:24px; padding:48px 40px; max-width:420px; width:100%; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.2); }
-    .lg-badge { display:inline-block; background:var(--primary-light); color:var(--primary); font-size:12px; font-weight:700; padding:4px 14px; border-radius:20px; margin-bottom:20px; }
-    .lg-title { font-size:24px; font-weight:800; color:var(--gray-800); margin-bottom:8px; }
-    .lg-sub { font-size:14px; color:var(--gray-600); margin-bottom:28px; line-height:1.6; }
-    .lg-input { width:100%; border:2px solid var(--gray-200); border-radius:12px; padding:14px 16px; font-size:15px; font-family:inherit; outline:none; transition:border-color .2s; margin-bottom:10px; box-sizing:border-box; }
-    .lg-input:focus { border-color:var(--primary); }
-    .lg-err { font-size:12px; color:var(--danger); margin-bottom:10px; min-height:18px; }
-    .lg-btn { width:100%; background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:white; border:none; border-radius:12px; padding:14px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; margin-bottom:16px; transition:opacity .2s; }
-    .lg-btn:disabled { opacity:.5; cursor:not-allowed; }
-    .lg-note { font-size:11px; color:var(--gray-400); line-height:1.8; }
-    .lg-note a { color:var(--primary); text-decoration:none; }
-
-    /* === TRIAL / PAYMENT UI === */
-    .trial-bar { background:var(--primary-light); border:1px solid rgba(79,70,229,0.2); border-radius:12px; padding:12px 16px; margin-bottom:20px; font-size:13px; color:var(--primary); font-weight:600; }
-    .pay-section { background:var(--gray-50); border:2px solid var(--gray-200); border-radius:16px; padding:24px; margin-top:20px; text-align:center; }
-    .pay-section h3 { font-size:16px; font-weight:800; color:var(--gray-800); margin-bottom:6px; }
-    .pay-section p { font-size:13px; color:var(--gray-600); margin-bottom:16px; line-height:1.6; }
-    .pay-btn { display:block; width:100%; background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:white; border:none; border-radius:12px; padding:14px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; margin-bottom:10px; box-shadow:0 4px 15px rgba(79,70,229,0.4); }
-    .pay-btn:disabled { opacity:.5; cursor:not-allowed; }
-    .portal-btn { display:block; width:100%; background:white; border:1px solid var(--gray-200); color:var(--gray-600); border-radius:12px; padding:10px; font-size:13px; cursor:pointer; font-family:inherit; }
-    .expired-overlay { text-align:center; padding:40px 20px; }
-    .expired-overlay h3 { font-size:18px; font-weight:800; color:var(--gray-800); margin-bottom:8px; }
-    .expired-overlay p { font-size:14px; color:var(--gray-600); margin-bottom:20px; }
+    @media (max-width: 760px) {
+      body { padding: 10px; }
+      .topbar, .status-strip, .panel-head { display: block; }
+      .status-strip { margin-top: 12px; }
+      .hero-grid, .grid-2, .grid-4, .analysis-columns, .form-grid, .option-grid { grid-template-columns: 1fr; }
+      .main-panel, .sidebar { padding: 16px; }
+      .panel-head h2, .hero-banner h3 { font-size: 24px; }
+      .chat-box { min-height: auto; }
+    }
   </style>
 </head>
 <body>
-
-<!-- === LOGIN GATE === -->
-<div id="login-gate">
-  <div class="lg-box">
-    <div class="lg-badge">AI 1on1 トレーニング</div>
-    <h1 class="lg-title">1on1 練習アプリ</h1>
-    <p class="lg-sub">メールアドレスを入力して始めてください。<br>初めての方は1ヶ月間無料でお試しいただけます。</p>
-    <input type="email" id="lg-email" class="lg-input" placeholder="example@company.com" autocomplete="email">
-    <div class="lg-err" id="lg-err"></div>
-    <button class="lg-btn" id="lg-btn" onclick="doLogin()">続ける →</button>
-    <p class="lg-note">
-      1ヶ月間無料トライアル付き・月額¥980<br>
-      <a href="#">利用規約 / プライバシーポリシー</a>
-    </p>
-  </div>
-</div>
-
-<!-- === TOP SCREEN === -->
-<div class="app-container">
-  <div id="screen-top" class="screen active">
-    <div class="top-card">
-      <div class="app-badge">AI 1on1 トレーニング</div>
-      <h1 class="app-title">1on1 練習アプリ</h1>
-      <p class="app-subtitle">
-        AIが本物の部下を演じます。リアルなシナリオで<br>
-        1on1スキルを鍛え、フィードバックで成長しましょう。
-      </p>
-
-      <div class="scenario-grid" id="scenarioGrid"></div>
-
-      <div id="trial-bar" class="trial-bar" style="display:none"></div>
-
-      <button class="start-btn" id="startBtn" disabled onclick="startSession()">
-        練習を開始する →
-      </button>
-
-      <div id="pay-section" class="pay-section" style="display:none">
-        <h3>🎉 無料トライアル終了</h3>
-        <p>引き続きご利用いただくには<br>サブスクリプション登録が必要です。</p>
-        <button class="pay-btn" id="pay-btn" onclick="startCheckout()">月額¥980で続ける</button>
-      </div>
-      <div id="portal-wrap" style="display:none;margin-top:12px;">
-        <button class="portal-btn" onclick="openPortal()">⚙️ 契約内容・解約・請求を管理する</button>
-      </div>
+  <div id="login-gate">
+    <div class="lg-box">
+      <div class="lg-badge">1on1基礎コーチング講座</div>
+      <h1 class="lg-title">何を聞けばいいか<br>迷う管理職のための実践アプリ</h1>
+      <p class="lg-sub">メールアドレスで始められます。初めての方は1か月無料で、講座と練習を試せます。</p>
+      <input type="email" id="lg-email" class="lg-input" placeholder="example@company.com" autocomplete="email">
+      <div class="lg-err" id="lg-err"></div>
+      <button class="lg-btn" id="lg-btn" onclick="doLogin()">続ける</button>
+      <p class="lg-note">1か月無料トライアル付き・月額980円</p>
     </div>
   </div>
 
-  <!-- === CHAT SCREEN === -->
-  <div id="screen-chat" class="screen">
-    <div class="chat-wrapper">
-      <div class="chat-header">
-        <div class="chat-header-left">
-          <div class="persona-avatar" id="personaAvatar">👤</div>
-          <div class="persona-info">
-            <div class="name" id="personaName">部下</div>
-            <div class="role" id="personaRole">シナリオ読み込み中...</div>
+  <div class="app-shell" id="app-container">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">1</div>
+        <div>
+          <h1>1on1基礎コーチング講座</h1>
+          <p>講座・練習・本番前準備・ふり返りをまとめた実務アプリ</p>
+        </div>
+      </div>
+      <div class="status-strip">
+        <div class="pill">講座完了 <strong id="completedCount">0/10</strong></div>
+        <div class="pill">練習回数 <strong id="practiceCount">0回</strong></div>
+        <div class="pill">次の重点 <strong id="priorityChip">深掘り</strong></div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <h2>進め方</h2>
+        <p>まず講座で土台をつくり、次に部下役AIとの練習で試し、本番前後の支援で実務につなげます。</p>
+
+        <div class="nav-list">
+          <button class="nav-button active" data-tab="overview">ホーム<small>講座の全体像と始め方</small></button>
+          <button class="nav-button" data-tab="course">10回講座<small>心理理解と返し方の基本</small></button>
+          <button class="nav-button" data-tab="practice">ケース練習<small>AI部下との実践対話</small></button>
+          <button class="nav-button" data-tab="prep">本番前3分準備<small>今日の1on1の整理</small></button>
+          <button class="nav-button" data-tab="review">本番後ふり返り<small>次回につなぐ記録</small></button>
+          <button class="nav-button" data-tab="dashboard">ミニ管理画面<small>苦手傾向と進捗確認</small></button>
+        </div>
+
+        <div id="courseSidebar" class="course-list"></div>
+      </aside>
+
+      <main class="main-panel">
+        <section class="tab-section active" id="overviewSection">
+          <div class="panel-head">
+            <div>
+              <span class="badge">中小零細企業向け</span>
+              <h2>「1on1で何を聞けばいいかわからない」<br>を減らすための設計です。</h2>
+              <p>単なる会話練習ではなく、10回の基礎講座、AI部下とのケース練習、本番前準備、本番後ふり返りまでを一体化しています。</p>
+            </div>
           </div>
-        </div>
-        <div class="header-actions">
-          <div class="turn-counter" id="turnCounter">0 ターン</div>
-          <button class="header-btn" onclick="endSession()">セッション終了</button>
-        </div>
-      </div>
 
-      <div class="chat-messages" id="chatMessages"></div>
+          <div class="hero-grid">
+            <article class="section-card hero-banner">
+              <div>
+                <h3>学んで、試して、<br>次の1on1に持っていく。</h3>
+                <p>心理理解、安心感づくり、深掘り、支援の探し方を段階的に学びながら、その場で練習と改善まで回せます。</p>
+              </div>
+              <div class="action-row">
+                <button class="primary-button" id="startCourseButton">第1回から始める</button>
+                <button class="secondary-button" id="jumpPracticeButton">AI練習へ進む</button>
+              </div>
+            </article>
 
-      <div class="chat-input-area">
-        <div class="input-row">
-          <textarea
-            class="chat-textarea"
-            id="userInput"
-            placeholder="部下に話しかけてみてください..."
-            rows="1"
-            onkeydown="handleKeydown(event)"
-            oninput="autoResize(this)"
-          ></textarea>
-          <button class="send-btn" id="sendBtn" onclick="sendMessage()">↑</button>
-        </div>
-        <div class="input-hint">Enter で送信 / Shift+Enter で改行</div>
-      </div>
+            <div class="grid-2">
+              <article class="mini-card">
+                <span class="stat-value" id="homeCompletedStat">0/10</span>
+                <h3>講座の進捗</h3>
+                <p class="muted">安心して話してもらう入り方から、離職予兆への向き合い方まで段階的に学べます。</p>
+              </article>
+              <article class="mini-card">
+                <span class="stat-value" id="homePracticeStat">0</span>
+                <h3>練習回数</h3>
+                <p class="muted">練習を重ねるほど、苦手な返し方と次の重点が見えてきます。</p>
+              </article>
+              <article class="mini-card">
+                <h3>このアプリでできること</h3>
+                <div class="chip-row" style="margin-top:12px;">
+                  <span class="chip">10回講座</span>
+                  <span class="chip">AI部下との対話</span>
+                  <span class="chip">フィードバック</span>
+                  <span class="chip">次回改善</span>
+                </div>
+              </article>
+              <article class="mini-card">
+                <h3>現場につなぐ機能</h3>
+                <div class="chip-row" style="margin-top:12px;">
+                  <span class="chip">本番前3分準備</span>
+                  <span class="chip">本番後ふり返り</span>
+                  <span class="chip">継続メモ</span>
+                  <span class="chip">苦手傾向確認</span>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <div id="trial-bar" class="trial-bar hidden"></div>
+
+          <div class="grid-4" style="margin-top:18px;">
+            <article class="course-card"><h4>1. 学習編</h4><p class="muted">心理理解、安心感づくり、深掘り、終わり方まで講座形式で学びます。</p></article>
+            <article class="course-card"><h4>2. 実践編</h4><p class="muted">疲弊、離職予兆、若手育成などのケースで実際に返し方を試します。</p></article>
+            <article class="course-card"><h4>3. 本番支援</h4><p class="muted">今日の目的、最初の質問、避けたい一言を面談前に整理できます。</p></article>
+            <article class="course-card"><h4>4. 定着支援</h4><p class="muted">面談後に気になった言葉と次回の宿題を残し、継続改善につなげます。</p></article>
+          </div>
+
+          <div id="pay-section" class="pay-section hidden">
+            <h3>無料トライアル終了</h3>
+            <p>引き続き講座と練習を利用するには、サブスクリプション登録が必要です。</p>
+            <button class="primary-button" id="pay-btn" onclick="startCheckout()">月額980円で続ける</button>
+          </div>
+          <div id="portal-wrap" class="hidden" style="margin-top:12px;">
+            <button class="portal-btn" onclick="openPortal()">契約内容・解約・請求を管理する</button>
+          </div>
+        </section>
+
+        <section class="tab-section" id="courseSection">
+          <div class="panel-head">
+            <div>
+              <span class="badge">10回の基礎コーチング講座</span>
+              <h2 id="courseTitle"></h2>
+              <p id="courseIntro"></p>
+            </div>
+            <div class="badge" id="courseStatusBadge">未完了</div>
+          </div>
+
+          <div class="grid-2">
+            <article class="section-card">
+              <h3>今回の狙い</h3>
+              <div class="detail-list" id="courseGoals"></div>
+            </article>
+            <article class="section-card">
+              <h3>見るべきポイント</h3>
+              <div class="signal-list" id="courseSignals"></div>
+            </article>
+          </div>
+
+          <div class="grid-2" style="margin-top:16px;">
+            <article class="section-card employee-box">
+              <div class="message-label">部下の発言例</div>
+              <p id="courseEmployeeLine"></p>
+            </article>
+            <article class="section-card coach-box">
+              <div class="message-label">コーチの着眼点</div>
+              <p id="courseCoachLine"></p>
+            </article>
+          </div>
+
+          <article class="section-card" style="margin-top:16px;">
+            <h3>返答の方向性を選ぶ</h3>
+            <p class="muted">模範解答を暗記するのでなく、どの意図で返すかを理解する練習です。</p>
+            <div class="option-grid" id="courseOptions"></div>
+            <div class="analysis-card hidden" id="courseFeedbackBox" style="margin-top:16px;"></div>
+            <div class="action-row" style="margin-top:16px;">
+              <button class="primary-button" id="markCompleteButton">この回を完了にする</button>
+              <button class="ghost-button" id="nextCourseButton">次の回へ</button>
+            </div>
+          </article>
+        </section>
+
+        <section class="tab-section" id="practiceSection">
+          <div class="panel-head">
+            <div>
+              <span class="badge">ケース練習</span>
+              <h2>AIの部下役と対話しながら、<br>聞き方と返し方を練習する。</h2>
+              <p>シナリオを選び、実際に話しかけてください。セッション終了後にAIが1on1コーチとしてフィードバックを返します。</p>
+            </div>
+          </div>
+
+          <div class="practice-shell">
+            <article class="section-card">
+              <h3>シナリオ選択</h3>
+              <div class="field" style="margin-top:12px;">
+                <label for="scenarioSelect">練習するテーマ</label>
+                <select id="scenarioSelect"></select>
+              </div>
+              <div class="message-box employee-box" style="margin-top:12px;">
+                <div class="message-label">部下プロフィール</div>
+                <p id="scenarioPersona"></p>
+              </div>
+              <div class="message-box" style="margin-top:12px;">
+                <div class="message-label">練習のポイント</div>
+                <p id="scenarioContext"></p>
+              </div>
+              <div class="tag-row" id="scenarioTags" style="margin-top:12px;"></div>
+              <div class="message-box coach-box" style="margin-top:12px;">
+                <div class="message-label">このケースで意識したいこと</div>
+                <p id="scenarioTip"></p>
+              </div>
+              <div class="action-row" style="margin-top:16px;">
+                <button class="primary-button" id="startPracticeButton">このシナリオで始める</button>
+              </div>
+            </article>
+
+            <article class="section-card chat-box">
+              <div class="chat-header">
+                <div class="chat-header-left">
+                  <div class="persona-avatar" id="personaAvatar">🙂</div>
+                  <div>
+                    <div style="font-weight:800;" id="personaName">シナリオを選択してください</div>
+                    <div class="muted" id="personaRole">まだセッションは始まっていません</div>
+                  </div>
+                </div>
+                <div class="header-actions">
+                  <div class="turn-counter" id="turnCounter">0 ターン</div>
+                  <button class="ghost-button" id="endSessionButton">セッション終了</button>
+                </div>
+              </div>
+
+              <div class="chat-log" id="chatMessages">
+                <div class="system-msg">左のシナリオを選び、「このシナリオで始める」を押すと練習を開始できます。</div>
+              </div>
+
+              <div class="chat-input-wrap">
+                <div class="input-row">
+                  <textarea id="userInput" class="chat-textarea" placeholder="部下に話しかけてみてください..." rows="1"></textarea>
+                  <button class="send-btn" id="sendBtn">↑</button>
+                </div>
+                <div class="practice-toolbar" style="margin-top:10px;">
+                  <button class="ghost-button" id="insertStarterButton">最初の一言の例を入れる</button>
+                  <small>Enterで送信 / Shift+Enterで改行</small>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="section-card feedback-panel hidden" id="feedbackPanel">
+            <h3>AIコーチからのフィードバック</h3>
+            <div class="feedback-loading hidden" id="feedbackLoading">
+              <div class="spinner"></div>
+              <p>AIがフィードバックを生成中です...</p>
+            </div>
+            <div class="feedback-content hidden" id="feedbackContent"></div>
+            <div class="action-row hidden" id="feedbackActions" style="margin-top:16px;">
+              <button class="primary-button" id="replayScenarioButton">同じシナリオで再挑戦</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-section" id="prepSection">
+          <div class="panel-head">
+            <div>
+              <span class="badge">本番前3分準備</span>
+              <h2>今日の1on1の目的と、<br>最初の3質問を整える。</h2>
+              <p>面談直前に、いきなり話し始めないための準備画面です。目的、相手の状態、今日の注意点を整理します。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="section-card">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="prepPurpose">今回の目的</label>
+                  <select id="prepPurpose">
+                    <option>最近元気がない理由を把握したい</option>
+                    <option>離職予兆がないか確認したい</option>
+                    <option>仕事量の負担を整理したい</option>
+                    <option>若手の成長停滞を整理したい</option>
+                    <option>人間関係の悩みを聞きたい</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="prepState">相手の今の状態</label>
+                  <select id="prepState">
+                    <option>警戒していそう</option>
+                    <option>疲れていて話す余裕がなさそう</option>
+                    <option>少し話したそうだが言葉にしきれていない</option>
+                    <option>不満がありそう</option>
+                    <option>諦めがにじんでいる</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="prepTime">使える時間</label>
+                  <select id="prepTime">
+                    <option>15分</option>
+                    <option>30分</option>
+                    <option>45分</option>
+                    <option>60分</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="prepRisk">気になっていること</label>
+                  <select id="prepRisk">
+                    <option>相手が「大丈夫です」で閉じそう</option>
+                    <option>自分が解決を急ぎそう</option>
+                    <option>評価の話に寄ってしまいそう</option>
+                    <option>何を深掘りすべきか迷いそう</option>
+                  </select>
+                </div>
+              </div>
+              <div class="action-row" style="margin-top:16px;">
+                <button class="primary-button" id="generatePrepButton">準備メモを作る</button>
+              </div>
+            </article>
+
+            <article class="section-card">
+              <h3>今日の準備メモ</h3>
+              <div class="prep-list" id="prepOutput">
+                <div class="prep-item">
+                  <div class="bullet">1</div>
+                  <div>目的を選ぶと、ここに最初の3質問と避けたい一言が表示されます。</div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-section" id="reviewSection">
+          <div class="panel-head">
+            <div>
+              <span class="badge">本番後ふり返り</span>
+              <h2>面談が終わったあとに、<br>次回につながるメモを残す。</h2>
+              <p>うまくいったかどうかだけで終わらせず、相手の気になった言葉と、自分の改善点を残します。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="section-card">
+              <div class="field">
+                <label for="reviewSignal">相手の気になった言葉</label>
+                <textarea id="reviewSignal" placeholder="例: 『忙しいだけです』と言っていたが、言い切る前に少し間があった。"></textarea>
+              </div>
+              <div class="field" style="margin-top:12px;">
+                <label for="reviewReflection">自分のふり返り</label>
+                <textarea id="reviewReflection" placeholder="例: 解決策を早く出そうとしてしまい、感情を受け止める時間が短かった。"></textarea>
+              </div>
+              <div class="field" style="margin-top:12px;">
+                <label for="reviewNextAction">次回の宿題</label>
+                <textarea id="reviewNextAction" placeholder="例: 次回は『最近いちばんしんどい場面』を具体的に聞く。"></textarea>
+              </div>
+              <div class="action-row" style="margin-top:16px;">
+                <button class="primary-button" id="saveReviewButton">ふり返りを保存する</button>
+              </div>
+            </article>
+
+            <article class="section-card">
+              <h3>直近のふり返り</h3>
+              <div id="reviewHistory"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-section" id="dashboardSection">
+          <div class="panel-head">
+            <div>
+              <span class="badge">ミニ管理画面</span>
+              <h2>少人数の会社でも見やすい、<br>最低限の進捗と苦手傾向。</h2>
+              <p>高度な分析より、次に何を重点にすべきかがすぐ見えることを重視しています。</p>
+            </div>
+          </div>
+
+          <div class="grid-4">
+            <article class="mini-card"><span class="stat-value" id="dashboardCompleted">0/10</span><h3>講座完了数</h3><p class="muted">段階学習の進み具合</p></article>
+            <article class="mini-card"><span class="stat-value" id="dashboardPractice">0</span><h3>練習回数</h3><p class="muted">ケース練習の累計</p></article>
+            <article class="mini-card"><span class="stat-value" id="dashboardWeakness">深掘り</span><h3>いまの重点</h3><p class="muted">次回の優先テーマ</p></article>
+            <article class="mini-card"><span class="stat-value" id="dashboardReviews">0</span><h3>ふり返り保存数</h3><p class="muted">本番後メモの蓄積</p></article>
+          </div>
+
+          <div class="grid-2" style="margin-top:16px;">
+            <article class="section-card">
+              <h3>苦手傾向</h3>
+              <div class="score-grid" id="dashboardScores"></div>
+            </article>
+            <article class="section-card">
+              <h3>次におすすめのアクション</h3>
+              <div class="timeline-list" id="dashboardActions"></div>
+            </article>
+          </div>
+
+          <div class="footer-note">この版ではブラウザ保存を使っています。将来は管理者別、チーム別、受講者別に拡張できます。</div>
+        </section>
+      </main>
     </div>
   </div>
 
-  <!-- === FEEDBACK SCREEN === -->
-  <div id="screen-feedback" class="screen">
-    <div class="feedback-wrapper">
-      <div class="feedback-header">
-        <h2>🎯 セッション完了！フィードバック</h2>
-        <p id="feedbackScenarioLabel">シナリオ: —</p>
-      </div>
-      <div class="feedback-body">
-        <div class="feedback-loading" id="feedbackLoading">
-          <div class="spinner"></div>
-          <p style="color: var(--gray-600); font-size: 14px;">AIがフィードバックを生成中...</p>
-        </div>
-        <div class="feedback-content" id="feedbackContent" style="display:none;"></div>
-      </div>
-      <div class="feedback-actions">
-        <button class="action-btn secondary" onclick="showScreen('top')">シナリオ選択に戻る</button>
-        <button class="action-btn primary" onclick="replayScenario()">同じシナリオで再挑戦</button>
-      </div>
-    </div>
-  </div>
-</div>
+  <script>
+    const storageKey = 'oneOnOneCourseStateV1';
+    const state = loadState();
+    const defaultScores = { empathy: 58, listening: 60, probing: 52, safety: 62 };
+    let currentScenario = state.currentScenarioId || 'burnout';
+    let messages = [];
+    let turnCount = 0;
+    let isLoading = false;
+    let sessionActive = false;
 
-<script>
-// ===== ログイン・トライアル・決済 =====
-(function() {
-  var email = localStorage.getItem('user_email');
-  if (email) {
-    document.getElementById('login-gate').style.display = 'none';
-    initApp();
-  } else {
-    document.getElementById('app-container') && (document.getElementById('app-container').style.display = 'none');
-    var inp = document.getElementById('lg-email');
-    inp.addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
-    setTimeout(function() { inp.focus(); }, 100);
-  }
-  // Stripeリダイレクト後の処理
-  var params = new URLSearchParams(window.location.search);
-  var sessionId = params.get('session_id');
-  if (sessionId) {
-    fetch('/api/stripe/session?session_id=' + sessionId)
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        if (data.customerId) {
-          localStorage.setItem('stripe_customer_id', data.customerId);
-          localStorage.removeItem('trial_start_date');
-        }
-        window.history.replaceState({}, '', '/');
+    const courseSessions = [
+      {
+        id: 1,
+        title: '安心して話してもらう入り方',
+        intro: '最初の一言で、相手が話すか閉じるかが大きく変わります。まずは安心感を作る回です。',
+        goals: ['最初の30秒で相手の緊張を上げない', '安全に話せる雰囲気をつくる', '評価や指摘に寄りすぎない始め方を覚える'],
+        signals: ['返答が短い時は警戒の可能性がある', '「大丈夫です」は本当に大丈夫とは限らない', '冒頭で上司が話しすぎると相手は閉じやすい'],
+        employee: 'ありがとうございます。えっと……特に大きな問題はないです。',
+        coach: '内容より温度感を先に見ます。まだ様子見している可能性があります。',
+        options: [
+          { label: '共感寄りに受け止める', body: '無理に何か出さなくても大丈夫だから、今日は最近の様子を少し聞かせてもらえる？', feedback: 'よい方向です。安心して話してよい場を先に作っています。', insight: 'この場面では情報量より警戒を下げることが先です。' },
+          { label: 'すぐに原因を特定する', body: '問題がないなら安心だけど、残業時間は増えているよね。何が原因なの？', feedback: '急ぎすぎです。詰められていると感じやすくなります。', insight: '原因特定より話しやすさが優先です。' },
+          { label: '励まして切り上げる', body: 'そっか。まあ大丈夫ならよかった。無理せず頑張ろう。', feedback: '表面上は穏やかですが、本音を出す機会を閉じています。', insight: '「大丈夫」をそのまま受け取るだけだと1on1が浅く終わります。' }
+        ]
+      },
+      {
+        id: 2,
+        title: '表面的な返答の奥を探る',
+        intro: '「別に」「大丈夫です」の裏には、警戒、疲労、言語化できなさが混ざります。',
+        goals: ['短い返答の裏にある可能性を複数持つ', '押しすぎずに問い直す', '答えやすい問いに変える'],
+        signals: ['曖昧語が多い時は整理できていないかもしれない', '否定表現が多い時は防御の可能性がある', '質問を広げすぎるとさらに閉じやすい'],
+        employee: 'いや、本当に大丈夫です。ちょっと忙しいだけです。',
+        coach: '「忙しいだけ」は、疲労や不安を雑にまとめていることもあります。',
+        options: [
+          { label: '少し具体化してもらう', body: '忙しいのはわかった。その中でも、時間が足りない感じなのか、気持ちが重い感じなのか、どちらに近い？', feedback: 'よい方向です。答えやすい2択で少しだけ具体化しています。', insight: '整理できていない時は、選びやすい問いが有効です。' },
+          { label: 'すぐに改善提案する', body: 'なら仕事を減らした方がいいね。どの案件を外せばいいか決めよう。', feedback: '早すぎます。まだ困りごとの輪郭が出ていません。', insight: '解決策は輪郭が見えてからで十分です。' },
+          { label: '一般論で終える', body: 'この時期はみんな忙しいよね。落ち着いたらまた話そう。', feedback: '相手固有の状況を見なくなっています。', insight: '一般論に逃げると「自分を見てもらえていない」と感じやすくなります。' }
+        ]
+      },
+      {
+        id: 3,
+        title: '抽象的な悩みを具体化する',
+        intro: '「なんとなくつらい」を、そのまま放置せず具体化する回です。',
+        goals: ['感情や困りごとを場面に下ろす', '抽象語を状況に変える', '詰問にならない具体化を覚える'],
+        signals: ['「なんとなく」「最近ずっと」は実態が見えにくい', '場面、相手、時間帯を聞くと輪郭が出やすい', '一度に全部聞くと考え込ませやすい'],
+        employee: 'なんとなく、最近ずっとうまくいってない感じがしていて……。',
+        coach: '励ますより、どの場面でそう感じたのかを丁寧に拾います。',
+        options: [
+          { label: '具体的な場面を聞く', body: 'そう感じる場面って、最近だとどんな時が一番思い浮かぶ？', feedback: 'よい方向です。感情を否定せず、出来事に下ろしています。', insight: '具体化は感情を軽視せず事実へ橋をかける作業です。' },
+          { label: 'すぐ前向きにする', body: 'でも前より成長していると思うよ。気にしすぎじゃない？', feedback: '逆効果です。感じ方そのものを弱めています。', insight: '励ましは十分に話したあとで使う方が安全です。' },
+          { label: '原因を断定する', body: 'それはたぶん業務量が多いからだね。', feedback: '断定が早すぎます。', insight: '見立ては持っても確定しない方がよいです。' }
+        ]
+      },
+      {
+        id: 4,
+        title: '感情に触れる',
+        intro: '事実だけを追うと、大事な部分を見落とします。感情にそっと触れる回です。',
+        goals: ['感情語がなくても温度感を拾う', '確認形で感情に触れる', '感情と事実を両方扱う'],
+        signals: ['トーンが落ちる、言い直しが多い時は感情がにじみやすい', '感情に触れたあと沈黙を急いで埋めない', '正論は早すぎると本音を閉じる'],
+        employee: 'ミスしたのは自分ですし……。まあ、自分がちゃんとしないといけないので。',
+        coach: '自責が強い時は、事実確認だけだとさらに閉じます。',
+        options: [
+          { label: '感情を確認する', body: '自分をかなり責めている感じがあるけど、いま結構しんどい？', feedback: 'よい方向です。確認形で感情に触れています。', insight: '自責が強い相手には、心の重さを言語化できる場が必要です。' },
+          { label: 'すぐに正論で整える', body: '誰でもミスはあるから、そこまで気にしなくていいよ。', feedback: '重さを軽く扱ったように受け取られることがあります。', insight: '正しい言葉でもタイミングが早いと本音を閉じます。' },
+          { label: '再発防止だけを聞く', body: '次に同じことが起きないように、何を変えるべきだと思う？', feedback: '感情が置き去りになっています。', insight: '反省の前に立ち直る余地を作る方が先です。' }
+        ]
+      },
+      {
+        id: 5,
+        title: '解決を急がず整理する',
+        intro: '良かれと思ってすぐ助言すると、相手はまだ話せていないまま終わります。',
+        goals: ['自分が解決したい気持ちを少し抑える', '相手の頭の中を一緒に整理する', '支援の前に輪郭を整える'],
+        signals: ['話が行ったり来たりする時は頭の中も散らかっている', 'こちらがまとめすぎると主体性が落ちる', '整理と解決は別段階だと意識する'],
+        employee: '仕事量も多いし、周りにも相談しづらいし、何が一番つらいのか自分でもよくわからなくて……。',
+        coach: '答えを出すことより、本人が状況を言葉にできるようにすることが先です。',
+        options: [
+          { label: '整理を一緒にする', body: 'いくつか重なっていそうだね。仕事量、相談しづらさ、整理できていない感じ、この3つが大きそうかな？', feedback: 'よい方向です。話を整理する補助になっています。', insight: '整理の言い換えは「わかってもらえた」感覚を作りやすいです。' },
+          { label: '結論を急ぐ', body: 'じゃあまず仕事量を減らそう。相談しづらい件はあとで考えよう。', feedback: '順番を決めるのが早すぎます。', insight: '整理が進んでから優先順位を決めた方が納得感が出ます。' },
+          { label: '抽象的に励ます', body: '一人で抱え込まないでね。いつでも相談して。', feedback: '温かいですが具体性が足りません。', insight: '次に何を話せばよいか相手も迷います。' }
+        ]
+      },
+      {
+        id: 6,
+        title: '支援できることを一緒に探す',
+        intro: '聞いて終わるだけでは弱いです。相手主体で支援を探る回です。',
+        goals: ['上司が全部決めずに支援の形を探す', '受け取りやすい支援に絞る', 'できることを曖昧にしない'],
+        signals: ['何を望むかを確認してから支援を出す', '「何でも言って」は広すぎる', '支援の単位を小さくすると具体化しやすい'],
+        employee: '正直、何を変えれば楽になるのかも、まだうまくわからなくて……。',
+        coach: '「全部解決する」ではなく、今できる一歩を一緒に探します。',
+        options: [
+          { label: '小さな支援を探る', body: '今週だけでも少し楽にするなら、仕事量、相談相手、進め方のどれから触るとよさそう？', feedback: 'よい方向です。支援を小さく区切れています。', insight: '整理できていない時ほど、支援の単位を細かくした方が前に進みます。' },
+          { label: '支援内容を決める', body: 'じゃあ私が案件を調整しておくね。それで様子を見よう。', feedback: '善意ですが一方通行です。', insight: '受け取る側の納得感が重要です。' },
+          { label: '整理できるまで保留にする', body: '整理できたらまた教えて。今日はここまでにしよう。', feedback: '宿題を返しすぎています。', insight: '迷っている時に全部持ち帰らせると止まりやすいです。' }
+        ]
+      },
+      {
+        id: 7,
+        title: '若手の成長停滞に向き合う',
+        intro: 'やる気がないように見える若手でも、背景は不安や遠慮のことがあります。',
+        goals: ['受け身さを性格で決めつけない', '自信低下と意欲低下を見分ける', '対話で動機を探る'],
+        signals: ['「向いてないかも」は自信低下のサインかもしれない', '反応が薄いから関心がないとは限らない', '育成でも安心感が土台になる'],
+        employee: '頑張っているつもりなんですけど、正直、自分に向いてないのかなって思うことがあります。',
+        coach: '「そんなことない」と打ち消すより、どこでそう思うのかを聞く方が深まります。',
+        options: [
+          { label: '場面を聞く', body: 'そう感じる時って、どんな場面が多い？ 仕事の内容なのか、周りとの比べ方なのか、少し聞いてみたい。', feedback: 'よい方向です。背景を探る姿勢になっています。', insight: '「向いてない」は経験不足や比較不安のことも多いです。' },
+          { label: 'すぐ励ます', body: 'いや、向いてないなんてことはないよ。もっと自信持って。', feedback: '実感を飛ばしています。', insight: '不安がまだ言葉になっていない段階では残りにくいです。' },
+          { label: '努力不足として返す', body: 'まずは数をこなすしかないね。慣れれば変わるよ。', feedback: '不安や自信低下を置き去りにしています。', insight: '若手育成では支援と期待の順番が大事です。' }
+        ]
+      },
+      {
+        id: 8,
+        title: '人間関係の悩みを扱う',
+        intro: '対人関係の悩みは、正しさより安心感が先です。',
+        goals: ['性格問題にしない', '言いづらさを受け止める', '事実と感情を分けて整理する'],
+        signals: ['名前を出すのをためらう時は話すこと自体に不安がある', '片方の言い分だけで断定しない', '本人の安全感を先に確保する'],
+        employee: 'ちょっと、最近同じチームの人とやりづらさがあって……でも大した話ではないです。',
+        coach: '誰が悪いかより、何が起きていて本人がどう感じているかを分けて聞きます。',
+        options: [
+          { label: '言いづらさごと受け止める', body: '大したことじゃないと言いながら、少し引っかかっていそうにも見える。話せる範囲で聞かせてもらえる？', feedback: 'よい方向です。話しづらさ自体を受け止めています。', insight: '人間関係の悩みは、内容より先に「話していい」と感じてもらうことが重要です。' },
+          { label: 'すぐ仲裁に入る', body: '誰のこと？ それなら私から注意しておくよ。', feedback: '早すぎます。まだ整理できていない可能性があります。', insight: '支援が先回りしすぎると話しにくくなります。' },
+          { label: '軽く流す', body: 'どこでも多少はあるから、あまり気にしすぎない方がいいよ。', feedback: '一般論で閉じています。', insight: '軽く扱われると次から相談されにくくなります。' }
+        ]
+      },
+      {
+        id: 9,
+        title: '離職予兆に向き合う',
+        intro: '退職をにおわせる言葉は、軽く流さず受け止める必要があります。',
+        goals: ['離職予兆を軽く扱わない', '引き留めより背景理解を優先する', '感情と状況を切り分けて聞く'],
+        signals: ['「このままでいいのかな」は要注意', '反射的な引き留めは本音を閉じやすい', '言葉の重さをそのまま扱う'],
+        employee: '最近、このままここで働き続けていいのか、ちょっとわからなくなる時があります。',
+        coach: '「そんなこと言わないで」は禁物です。重く聞こえること自体を認めます。',
+        options: [
+          { label: '重さを認めて聞く', body: 'それはかなり重い感覚にも聞こえる。最近そう感じる場面が増えているのか、少し聞かせてもらってもいい？', feedback: 'よい方向です。軽く扱わず背景理解へ進めています。', insight: 'まず「その感覚をちゃんと受け止めた」と伝わることが重要です。' },
+          { label: 'すぐ引き留める', body: 'そんなこと言わないでよ。辞めるのはもったいないよ。', feedback: '会社側の都合が前に出ています。', insight: '引き留めは背景理解のあとでも遅くありません。' },
+          { label: '転職話として詰める', body: '転職サイトとか見てるの？ もう決めてる感じ？', feedback: '詰めすぎです。', insight: '行動確認より感情と原因の輪郭をつかむ方が大切です。' }
+        ]
+      },
+      {
+        id: 10,
+        title: '面談の終わり方を整える',
+        intro: '話して終わりでは定着しません。次回につながる終わり方を設計する回です。',
+        goals: ['面談を曖昧に終わらせない', '小さな宿題と次回の焦点を残す', '支援の約束を具体化する'],
+        signals: ['終わり方が曖昧だと実務で流れやすい', '宿題は重すぎない単位にする', '次回何を確認するか一言で残す'],
+        employee: '少し整理できました。全部解決ではないですけど、話せてよかったです。',
+        coach: '安心して終えつつ、次回へ何を持ち越すかを軽く決めると定着しやすくなります。',
+        options: [
+          { label: '次回につながる一言を残す', body: '話してくれてありがとう。次回までに、特にしんどさが強い場面を一つだけ覚えておいてもらえる？', feedback: 'よい方向です。安心感と継続性の両方があります。', insight: '終わり方は継続的な1on1の質を左右します。' },
+          { label: 'きれいに締めて終える', body: 'よかった。じゃあ今日はこれで終わりにしよう。', feedback: '悪くはありませんが次回への接続が弱いです。', insight: '1on1は単発より連続性が重要です。' },
+          { label: '宿題を重くする', body: 'じゃあ次回までに原因と改善案を整理してまとめてきて。', feedback: '負荷を返しすぎています。', insight: '宿題は小さく観察レベルにとどめた方が続きます。' }
+        ]
+      }
+    ];
+
+    const SCENARIOS = {
+      burnout: { name: '燃え尽き・モチベーション低下', persona: '田中さん（28歳）', avatar: '😔', tags: ['疲弊', 'モチベ低下', '残業'], context: '残業が続き、以前より反応が薄くなっている部下です。最初は「問題ない」と言いがちです。', tip: '解決策を急がず、まず安心感と温度感の確認を優先してください。', starter: 'ありがとう。無理に何か出さなくても大丈夫だから、今日は最近の様子を少し聞かせてもらえる？' },
+      conflict: { name: 'チーム内人間関係の悩み', persona: '佐藤さん（32歳）', avatar: '😟', tags: ['人間関係', 'チーム', '言いづらさ'], context: '同僚との関係が悪化し、仕事のしづらさとストレスが高まっています。', tip: '誰が悪いかを決めるより先に、どんな場面で何が起きているかを整理してください。', starter: '話しづらいことなら無理にまとめなくて大丈夫です。最近やりづらさを感じる場面があれば、話せる範囲で教えてください。' },
+      career: { name: 'キャリアの方向性・成長の悩み', persona: '鈴木さん（25歳）', avatar: '🤔', tags: ['キャリア', '将来不安', '転職予兆'], context: '入社3年目前後で、このまま今の部署にいてよいのか迷い始めています。', tip: '否定や引き留めに急がず、どの場面で迷いが強くなるかを聞いてください。', starter: '将来のことを考えているんだね。まだ整理しきれてなくても大丈夫だから、どんな時にその気持ちが強くなるのか聞かせてもらえる？' },
+      performance: { name: '業務パフォーマンスの課題', persona: '高橋さん（35歳）', avatar: '😰', tags: ['ミス増加', '自信低下', 'プレッシャー'], context: '最近のミス増加で自信を失い、プライドもあり弱みを出しづらい状態です。', tip: '責めるより、何が難しくなっているのかを一緒に言語化する姿勢が有効です。', starter: '最近しんどさややりづらさがあるようにも見えていて、少し気になっていました。どんな場面が一番つらいか聞かせてもらえる？' },
+      worklife: { name: '仕事と私生活のバランス', persona: '中村さん（30歳）', avatar: '😓', tags: ['育児', '両立', '限界'], context: '仕事と家庭の両立に限界を感じつつも、迷惑をかけたくない思いが強い部下です。', tip: '「大変ですがなんとか」は要注意です。罪悪感を受け止めてから具体的な配慮へ進んでください。', starter: 'なんとかやっていると言いながら、かなり頑張っている感じも伝わってきます。いま一番負担が大きいのはどのあたりですか？' }
+    };
+
+    const OPENING_MESSAGES = {
+      burnout: 'あ、部長、お時間いただいてありがとうございます。えっと...特に何も問題はないんですが、1on1ということで...',
+      conflict: 'はい、呼んでいただいてありがとうございます。えーと...何でしょうか？',
+      career: 'あ、はい。お時間ありがとうございます。実は、少し相談したいことがあって...',
+      performance: '失礼します。呼んでいただきましたが...何かありましたでしょうか？',
+      worklife: 'お時間いただいてありがとうございます。最近はまあ、なんとかやっています。'
+    };
+
+    const navButtons = Array.from(document.querySelectorAll('.nav-button'));
+    const sections = {
+      overview: document.getElementById('overviewSection'),
+      course: document.getElementById('courseSection'),
+      practice: document.getElementById('practiceSection'),
+      prep: document.getElementById('prepSection'),
+      review: document.getElementById('reviewSection'),
+      dashboard: document.getElementById('dashboardSection')
+    };
+
+    const courseSidebar = document.getElementById('courseSidebar');
+    const courseTitle = document.getElementById('courseTitle');
+    const courseIntro = document.getElementById('courseIntro');
+    const courseGoals = document.getElementById('courseGoals');
+    const courseSignals = document.getElementById('courseSignals');
+    const courseEmployeeLine = document.getElementById('courseEmployeeLine');
+    const courseCoachLine = document.getElementById('courseCoachLine');
+    const courseOptions = document.getElementById('courseOptions');
+    const courseFeedbackBox = document.getElementById('courseFeedbackBox');
+    const courseStatusBadge = document.getElementById('courseStatusBadge');
+
+    const scenarioSelect = document.getElementById('scenarioSelect');
+    const scenarioPersona = document.getElementById('scenarioPersona');
+    const scenarioContext = document.getElementById('scenarioContext');
+    const scenarioTags = document.getElementById('scenarioTags');
+    const scenarioTip = document.getElementById('scenarioTip');
+
+    const completedCount = document.getElementById('completedCount');
+    const practiceCount = document.getElementById('practiceCount');
+    const priorityChip = document.getElementById('priorityChip');
+    const homeCompletedStat = document.getElementById('homeCompletedStat');
+    const homePracticeStat = document.getElementById('homePracticeStat');
+    const dashboardCompleted = document.getElementById('dashboardCompleted');
+    const dashboardPractice = document.getElementById('dashboardPractice');
+    const dashboardWeakness = document.getElementById('dashboardWeakness');
+    const dashboardReviews = document.getElementById('dashboardReviews');
+    const dashboardScores = document.getElementById('dashboardScores');
+    const dashboardActions = document.getElementById('dashboardActions');
+    const reviewHistory = document.getElementById('reviewHistory');
+
+    (function boot() {
+      const email = localStorage.getItem('user_email');
+      const input = document.getElementById('lg-email');
+      input.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') doLogin();
+      });
+      if (email) {
+        document.getElementById('login-gate').style.display = 'none';
         initApp();
-      }).catch(function() { initApp(); });
-  }
-})();
+      } else {
+        setTimeout(function() { input.focus(); }, 100);
+      }
+      const params = new URLSearchParams(window.location.search);
+      const sessionId = params.get('session_id');
+      if (sessionId) {
+        fetch('/api/stripe/session?session_id=' + sessionId)
+          .then(function(response) { return response.json(); })
+          .then(function(data) {
+            if (data.customerId) {
+              localStorage.setItem('stripe_customer_id', data.customerId);
+              localStorage.removeItem('trial_start_date');
+            }
+            window.history.replaceState({}, '', '/');
+            initApp();
+          })
+          .catch(function() { initApp(); });
+      }
+    })();
 
-function doLogin() {
-  var email = document.getElementById('lg-email').value.trim();
-  var errEl = document.getElementById('lg-err');
-  var btn = document.getElementById('lg-btn');
-  errEl.textContent = '';
-  if (!email || !email.includes('@')) { errEl.textContent = '有効なメールアドレスを入力してください'; return; }
-  btn.disabled = true; btn.textContent = '確認中...';
-  fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email }) })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.error) { errEl.textContent = data.error; btn.disabled = false; btn.textContent = '続ける →'; return; }
-      localStorage.setItem('user_email', email);
-      if (data.customerId) localStorage.setItem('stripe_customer_id', data.customerId);
-      fetch('/api/sheets/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: email, status: data.status }) }).catch(function() {});
-      document.getElementById('login-gate').style.display = 'none';
-      initApp();
-    })
-    .catch(function() { errEl.textContent = '通信エラーが発生しました。再度お試しください。'; btn.disabled = false; btn.textContent = '続ける →'; });
-}
-
-function initApp() {
-  if (!localStorage.getItem('trial_start_date')) {
-    localStorage.setItem('trial_start_date', Date.now().toString());
-  }
-  var subscribed = !!localStorage.getItem('stripe_customer_id');
-  var elapsed = Date.now() - parseInt(localStorage.getItem('trial_start_date') || '0');
-  var trialActive = elapsed < 30 * 24 * 60 * 60 * 1000;
-
-  if (subscribed) {
-    document.getElementById('portal-wrap').style.display = 'block';
-  } else if (trialActive) {
-    var days = Math.ceil((30 * 24 * 60 * 60 * 1000 - elapsed) / (24 * 60 * 60 * 1000));
-    var bar = document.getElementById('trial-bar');
-    bar.style.display = 'block';
-    bar.textContent = '🎁 無料トライアル中 — あと ' + days + ' 日';
-  } else {
-    document.getElementById('pay-section').style.display = 'block';
-  }
-}
-
-function isAuthorized() {
-  if (localStorage.getItem('stripe_customer_id')) return true;
-  var elapsed = Date.now() - parseInt(localStorage.getItem('trial_start_date') || '0');
-  return elapsed < 30 * 24 * 60 * 60 * 1000;
-}
-
-function startCheckout() {
-  var btn = document.getElementById('pay-btn');
-  btn.disabled = true; btn.textContent = '処理中...';
-  fetch('/api/stripe/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' } })
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.url) { window.location.href = data.url; }
-      else { alert('エラー: ' + (data.error || '不明')); btn.disabled = false; btn.textContent = '月額¥980で続ける'; }
-    })
-    .catch(function(e) { alert('通信エラー: ' + e.message); btn.disabled = false; btn.textContent = '月額¥980で続ける'; });
-}
-
-function openPortal() {
-  var customerId = localStorage.getItem('stripe_customer_id');
-  if (!customerId) { alert('お客様情報が見つかりません。'); return; }
-  fetch('/api/stripe/portal', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ customerId: customerId }) })
-    .then(function(r) { return r.json(); })
-    .then(function(data) { if (data.url) window.location.href = data.url; })
-    .catch(function() { alert('通信エラーが発生しました。'); });
-}
-// ===== ここまで =====
-
-const SCENARIOS = {
-  burnout: {
-    name: "燃え尽き・モチベーション低下",
-    persona: "田中さん（28歳）",
-    avatar: "😔",
-    desc: "残業続きで疲弊。やる気が見えない部下との対話",
-    icon: "🔥"
-  },
-  conflict: {
-    name: "チーム内人間関係の悩み",
-    persona: "佐藤さん（32歳）",
-    avatar: "😟",
-    desc: "同僚との関係が悪化。チームの雰囲気も低下",
-    icon: "🤝"
-  },
-  career: {
-    name: "キャリアの方向性・成長の悩み",
-    persona: "鈴木さん（25歳）",
-    avatar: "🤔",
-    desc: "転職・異動を検討中。将来に迷いがある若手",
-    icon: "🚀"
-  },
-  performance: {
-    name: "業務パフォーマンスの課題",
-    persona: "高橋さん（35歳）",
-    avatar: "😰",
-    desc: "最近ミスが増加。自信を失いかけているベテラン",
-    icon: "📊"
-  },
-  worklife: {
-    name: "仕事と私生活のバランス",
-    persona: "中村さん（30歳）",
-    avatar: "😓",
-    desc: "育児と仕事の両立に限界。疲弊している部下",
-    icon: "⚖️"
-  }
-};
-
-const OPENING_MESSAGES = {
-  burnout: "あ、部長、お時間いただいてありがとうございます。えっと...特に何も問題はないんですが、1on1ということで...",
-  conflict: "はい、呼んでいただいてありがとうございます。えーと...何でしょうか？",
-  career: "あ、はい。お時間ありがとうございます。実は、少し相談したいことがあって...",
-  performance: "失礼します。呼んでいただきましたが...何かありましたでしょうか？",
-  worklife: "お時間いただいてありがとうございます。最近はまあ、なんとかやっています。"
-};
-
-let currentScenario = null;
-let messages = [];
-let turnCount = 0;
-let isLoading = false;
-
-// Build scenario grid
-function buildScenarioGrid() {
-  const grid = document.getElementById('scenarioGrid');
-  grid.innerHTML = Object.entries(SCENARIOS).map(([key, s]) => `
-    <div class="scenario-card" id="card-${key}" onclick="selectScenario('${key}')">
-      <div class="scenario-icon">${s.icon}</div>
-      <div class="scenario-title">${s.name}</div>
-      <div class="scenario-desc">${s.desc}</div>
-    </div>
-  `).join('');
-}
-
-function selectScenario(key) {
-  document.querySelectorAll('.scenario-card').forEach(c => c.classList.remove('selected'));
-  document.getElementById(`card-${key}`).classList.add('selected');
-  currentScenario = key;
-  document.getElementById('startBtn').disabled = false;
-}
-
-function showScreen(name) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(`screen-${name}`).classList.add('active');
-  window.scrollTo(0, 0);
-}
-
-function startSession() {
-  if (!currentScenario) return;
-  if (!isAuthorized()) {
-    document.getElementById('pay-section').style.display = 'block';
-    document.getElementById('pay-section').scrollIntoView({ behavior: 'smooth' });
-    return;
-  }
-  const s = SCENARIOS[currentScenario];
-
-  // Reset state
-  messages = [];
-  turnCount = 0;
-
-  // Setup header
-  document.getElementById('personaAvatar').textContent = s.avatar;
-  document.getElementById('personaName').textContent = s.persona;
-  document.getElementById('personaRole').textContent = s.name;
-  document.getElementById('turnCounter').textContent = '0 ターン';
-
-  // Clear chat
-  const chatEl = document.getElementById('chatMessages');
-  chatEl.innerHTML = `
-    <div class="system-msg">
-      <span class="scenario-tag">📋 ${s.name}</span><br>
-      <span style="font-size:11px; margin-top:4px; display:block;">1on1がはじまりました。部下に話しかけてみましょう。</span>
-    </div>
-  `;
-
-  showScreen('chat');
-
-  // Opening message from AI
-  setTimeout(() => addMessage('assistant', OPENING_MESSAGES[currentScenario]), 600);
-}
-
-function addMessage(role, content) {
-  const s = SCENARIOS[currentScenario];
-  const chatEl = document.getElementById('chatMessages');
-  const div = document.createElement('div');
-  div.className = `message ${role}`;
-  div.innerHTML = `
-    <div class="msg-avatar">${role === 'assistant' ? s.avatar : '👔'}</div>
-    <div class="msg-bubble">${escapeHtml(content)}</div>
-  `;
-  chatEl.appendChild(div);
-  chatEl.scrollTop = chatEl.scrollHeight;
-
-  messages.push({ role, content });
-  if (role === 'user') {
-    turnCount++;
-    document.getElementById('turnCounter').textContent = `${turnCount} ターン`;
-  }
-}
-
-function showTyping() {
-  const chatEl = document.getElementById('chatMessages');
-  const div = document.createElement('div');
-  div.className = 'typing-indicator';
-  div.id = 'typingIndicator';
-  const s = SCENARIOS[currentScenario];
-  div.innerHTML = `
-    <div class="msg-avatar">${s.avatar}</div>
-    <div class="typing-dots"><span></span><span></span><span></span></div>
-  `;
-  chatEl.appendChild(div);
-  chatEl.scrollTop = chatEl.scrollHeight;
-}
-
-function hideTyping() {
-  const el = document.getElementById('typingIndicator');
-  if (el) el.remove();
-}
-
-async function sendMessage() {
-  const input = document.getElementById('userInput');
-  const text = input.value.trim();
-  if (!text || isLoading) return;
-
-  input.value = '';
-  input.style.height = 'auto';
-  isLoading = true;
-  document.getElementById('sendBtn').disabled = true;
-
-  addMessage('user', text);
-  showTyping();
-
-  // Build messages for API (exclude opening message from history to keep clean)
-  const apiMessages = messages
-    .filter((m, i) => !(i === 0 && m.role === 'assistant'))
-    .map(m => ({ role: m.role, content: m.content }));
-
-  try {
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'chat',
-        scenario: currentScenario,
-        messages: apiMessages
+    function doLogin() {
+      const email = document.getElementById('lg-email').value.trim();
+      const errEl = document.getElementById('lg-err');
+      const btn = document.getElementById('lg-btn');
+      errEl.textContent = '';
+      if (!email || !email.includes('@')) {
+        errEl.textContent = '有効なメールアドレスを入力してください';
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = '確認中...';
+      fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email })
       })
-    });
-
-    const data = await res.json();
-    hideTyping();
-
-    if (data.reply) {
-      addMessage('assistant', data.reply);
-    } else {
-      addMessage('assistant', `（エラー: ${data.error || '不明なエラー'}）`);
+        .then(function(response) { return response.json(); })
+        .then(function(data) {
+          if (data.error) {
+            errEl.textContent = data.error;
+            btn.disabled = false;
+            btn.textContent = '続ける';
+            return;
+          }
+          localStorage.setItem('user_email', email);
+          if (data.customerId) localStorage.setItem('stripe_customer_id', data.customerId);
+          fetch('/api/sheets/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, status: data.status })
+          }).catch(function() {});
+          document.getElementById('login-gate').style.display = 'none';
+          initApp();
+        })
+        .catch(function() {
+          errEl.textContent = '通信エラーが発生しました。再度お試しください。';
+          btn.disabled = false;
+          btn.textContent = '続ける';
+        });
     }
-  } catch (e) {
-    hideTyping();
-    addMessage('assistant', '（通信エラーが発生しました）');
-  }
 
-  isLoading = false;
-  document.getElementById('sendBtn').disabled = false;
-  document.getElementById('userInput').focus();
-}
+    function initApp() {
+      if (!localStorage.getItem('trial_start_date')) {
+        localStorage.setItem('trial_start_date', Date.now().toString());
+      }
+      const subscribed = !!localStorage.getItem('stripe_customer_id');
+      const elapsed = Date.now() - parseInt(localStorage.getItem('trial_start_date') || '0', 10);
+      const trialActive = elapsed < 30 * 24 * 60 * 60 * 1000;
+      const trialBar = document.getElementById('trial-bar');
+      const paySection = document.getElementById('pay-section');
+      const portalWrap = document.getElementById('portal-wrap');
 
-async function endSession() {
-  if (messages.length < 2) {
-    alert('もう少し会話してからセッションを終了してください。');
-    return;
-  }
+      trialBar.classList.add('hidden');
+      paySection.classList.add('hidden');
+      portalWrap.classList.add('hidden');
 
-  const s = SCENARIOS[currentScenario];
-  document.getElementById('feedbackScenarioLabel').textContent = `シナリオ: ${s.name} | ${turnCount} ターン`;
-  document.getElementById('feedbackLoading').style.display = 'block';
-  document.getElementById('feedbackContent').style.display = 'none';
+      if (subscribed) {
+        portalWrap.classList.remove('hidden');
+      } else if (trialActive) {
+        const days = Math.ceil((30 * 24 * 60 * 60 * 1000 - elapsed) / (24 * 60 * 60 * 1000));
+        trialBar.classList.remove('hidden');
+        trialBar.textContent = '無料トライアル中 - あと ' + days + ' 日';
+      } else {
+        paySection.classList.remove('hidden');
+      }
 
-  showScreen('feedback');
+      bindEvents();
+      renderAll();
+    }
 
-  // Filter to only user/assistant turns (exclude system opening)
-  const apiMessages = messages
-    .filter((m, i) => !(i === 0 && m.role === 'assistant'))
-    .map(m => ({ role: m.role, content: m.content }));
+    function isAuthorized() {
+      if (localStorage.getItem('stripe_customer_id')) return true;
+      const elapsed = Date.now() - parseInt(localStorage.getItem('trial_start_date') || '0', 10);
+      return elapsed < 30 * 24 * 60 * 60 * 1000;
+    }
 
-  try {
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        action: 'feedback',
-        scenario: currentScenario,
-        messages: apiMessages
+    function startCheckout() {
+      const btn = document.getElementById('pay-btn');
+      btn.disabled = true;
+      btn.textContent = '処理中...';
+      fetch('/api/stripe/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+        .then(function(response) { return response.json(); })
+        .then(function(data) {
+          if (data.url) {
+            window.location.href = data.url;
+          } else {
+            alert('エラー: ' + (data.error || '不明'));
+            btn.disabled = false;
+            btn.textContent = '月額980円で続ける';
+          }
+        })
+        .catch(function(error) {
+          alert('通信エラー: ' + error.message);
+          btn.disabled = false;
+          btn.textContent = '月額980円で続ける';
+        });
+    }
+
+    function openPortal() {
+      const customerId = localStorage.getItem('stripe_customer_id');
+      if (!customerId) {
+        alert('お客様情報が見つかりません。');
+        return;
+      }
+      fetch('/api/stripe/portal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ customerId: customerId })
       })
-    });
+        .then(function(response) { return response.json(); })
+        .then(function(data) { if (data.url) window.location.href = data.url; })
+        .catch(function() { alert('通信エラーが発生しました。'); });
+    }
 
-    const data = await res.json();
-    document.getElementById('feedbackLoading').style.display = 'none';
-    const contentEl = document.getElementById('feedbackContent');
-    contentEl.style.display = 'block';
-    contentEl.innerHTML = formatFeedback(data.feedback || 'フィードバックを取得できませんでした。');
-  } catch (e) {
-    document.getElementById('feedbackLoading').style.display = 'none';
-    const contentEl = document.getElementById('feedbackContent');
-    contentEl.style.display = 'block';
-    contentEl.textContent = '通信エラーが発生しました。';
-  }
-}
+    function bindEvents() {
+      if (window.__boundOneOnOneApp) return;
+      window.__boundOneOnOneApp = true;
 
-function formatFeedback(text) {
-  return text
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/^#{1,3}\s+(.+)$/gm, '<h3>$1</h3>')
-    .replace(/^[-•]\s+(.+)$/gm, '• $1')
-    .replace(/\n/g, '<br>');
-}
+      navButtons.forEach(function(button) {
+        button.addEventListener('click', function() { switchTab(button.dataset.tab); });
+      });
+      document.getElementById('startCourseButton').addEventListener('click', function() { switchTab('course'); });
+      document.getElementById('jumpPracticeButton').addEventListener('click', function() { switchTab('practice'); });
+      document.getElementById('nextCourseButton').addEventListener('click', goToNextCourse);
+      document.getElementById('markCompleteButton').addEventListener('click', markCourseComplete);
+      scenarioSelect.addEventListener('change', function() {
+        currentScenario = scenarioSelect.value;
+        state.currentScenarioId = currentScenario;
+        saveState();
+        renderScenario();
+      });
+      document.getElementById('startPracticeButton').addEventListener('click', startSession);
+      document.getElementById('insertStarterButton').addEventListener('click', function() {
+        document.getElementById('userInput').value = SCENARIOS[currentScenario].starter;
+        autoResize(document.getElementById('userInput'));
+      });
+      document.getElementById('sendBtn').addEventListener('click', sendMessage);
+      document.getElementById('userInput').addEventListener('keydown', handleKeydown);
+      document.getElementById('userInput').addEventListener('input', function() { autoResize(this); });
+      document.getElementById('endSessionButton').addEventListener('click', endSession);
+      document.getElementById('replayScenarioButton').addEventListener('click', startSession);
+      document.getElementById('generatePrepButton').addEventListener('click', renderPrepOutput);
+      document.getElementById('saveReviewButton').addEventListener('click', saveReview);
+    }
 
-function replayScenario() {
-  startSession();
-}
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+        return {
+          currentCourseId: saved.currentCourseId || 1,
+          completedCourses: Array.isArray(saved.completedCourses) ? saved.completedCourses : [],
+          currentScenarioId: saved.currentScenarioId || 'burnout',
+          practiceLogs: Array.isArray(saved.practiceLogs) ? saved.practiceLogs : [],
+          reviews: Array.isArray(saved.reviews) ? saved.reviews : [],
+          prepMemo: saved.prepMemo || null
+        };
+      } catch (error) {
+        return {
+          currentCourseId: 1,
+          completedCourses: [],
+          currentScenarioId: 'burnout',
+          practiceLogs: [],
+          reviews: [],
+          prepMemo: null
+        };
+      }
+    }
 
-function handleKeydown(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  }
-}
+    function saveState() {
+      localStorage.setItem(storageKey, JSON.stringify(state));
+    }
 
-function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 100) + 'px';
-}
+    function switchTab(tabId) {
+      navButtons.forEach(function(button) { button.classList.toggle('active', button.dataset.tab === tabId); });
+      Object.entries(sections).forEach(function(entry) { entry[1].classList.toggle('active', entry[0] === tabId); });
+    }
 
-function escapeHtml(text) {
-  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
-}
+    function renderAll() {
+      renderCourseSidebar();
+      renderCourse();
+      renderScenarioSelect();
+      renderScenario();
+      renderReviewHistory();
+      renderMetrics();
+      if (state.prepMemo) renderPrepOutput();
+    }
 
-// Init
-buildScenarioGrid();
-</script>
+    function renderCourseSidebar() {
+      courseSidebar.innerHTML = '';
+      courseSessions.forEach(function(session) {
+        const button = document.createElement('button');
+        button.className = 'course-button' + (session.id === state.currentCourseId ? ' active' : '');
+        button.innerHTML = '<span class="course-no">' + session.id + '</span><span class="course-copy"><strong>' + escapeHtml(session.title) + '</strong><small>' + escapeHtml(session.intro) + '</small></span><span class="course-state">' + (state.completedCourses.includes(session.id) ? '完了' : '未完了') + '</span>';
+        button.addEventListener('click', function() {
+          state.currentCourseId = session.id;
+          saveState();
+          renderCourseSidebar();
+          renderCourse();
+          switchTab('course');
+        });
+        courseSidebar.appendChild(button);
+      });
+    }
+
+    function renderCourse() {
+      const session = courseSessions.find(function(item) { return item.id === state.currentCourseId; }) || courseSessions[0];
+      courseTitle.textContent = session.id + '. ' + session.title;
+      courseIntro.textContent = session.intro;
+      courseEmployeeLine.textContent = session.employee;
+      courseCoachLine.textContent = session.coach;
+      courseStatusBadge.textContent = state.completedCourses.includes(session.id) ? '完了済み' : '未完了';
+      courseGoals.innerHTML = session.goals.map(function(goal, index) { return '<div class="detail-item"><div class="bullet">' + (index + 1) + '</div><div>' + escapeHtml(goal) + '</div></div>'; }).join('');
+      courseSignals.innerHTML = session.signals.map(function(signal, index) { return '<div class="signal-item"><div class="bullet">' + (index + 1) + '</div><div>' + escapeHtml(signal) + '</div></div>'; }).join('');
+      courseOptions.innerHTML = '';
+      courseFeedbackBox.classList.add('hidden');
+      courseFeedbackBox.innerHTML = '';
+      session.options.forEach(function(option) {
+        const button = document.createElement('button');
+        button.className = 'option-button';
+        button.innerHTML = '<strong>' + escapeHtml(option.label) + '</strong><div style="margin-top:8px;">' + escapeHtml(option.body) + '</div>';
+        button.addEventListener('click', function() {
+          Array.from(courseOptions.children).forEach(function(child) { child.classList.remove('selected'); });
+          button.classList.add('selected');
+          courseFeedbackBox.classList.remove('hidden');
+          courseFeedbackBox.innerHTML = '<h3>' + escapeHtml(option.label) + '</h3><div class="message-box coach-box" style="margin-top:12px;"><div class="message-label">講評</div><p>' + escapeHtml(option.feedback) + '</p></div><div class="message-box" style="margin-top:12px;"><div class="message-label">なぜそうなのか</div><p>' + escapeHtml(option.insight) + '</p></div>';
+        });
+        courseOptions.appendChild(button);
+      });
+    }
+
+    function goToNextCourse() {
+      const currentIndex = courseSessions.findIndex(function(session) { return session.id === state.currentCourseId; });
+      const next = courseSessions[Math.min(currentIndex + 1, courseSessions.length - 1)];
+      state.currentCourseId = next.id;
+      saveState();
+      renderCourseSidebar();
+      renderCourse();
+    }
+
+    function markCourseComplete() {
+      if (!state.completedCourses.includes(state.currentCourseId)) state.completedCourses.push(state.currentCourseId);
+      saveState();
+      renderAll();
+    }
+
+    function renderScenarioSelect() {
+      scenarioSelect.innerHTML = Object.keys(SCENARIOS).map(function(key) { return '<option value="' + key + '">' + escapeHtml(SCENARIOS[key].name) + '</option>'; }).join('');
+      scenarioSelect.value = currentScenario;
+    }
+
+    function renderScenario() {
+      const scenario = SCENARIOS[currentScenario];
+      scenarioPersona.textContent = scenario.persona;
+      scenarioContext.textContent = scenario.context;
+      scenarioTip.textContent = scenario.tip;
+      scenarioTags.innerHTML = scenario.tags.map(function(tag) { return '<span class="tag">' + escapeHtml(tag) + '</span>'; }).join('');
+    }
+
+    function resetPracticePanel() {
+      document.getElementById('feedbackPanel').classList.add('hidden');
+      document.getElementById('feedbackLoading').classList.add('hidden');
+      document.getElementById('feedbackContent').classList.add('hidden');
+      document.getElementById('feedbackActions').classList.add('hidden');
+      document.getElementById('feedbackContent').innerHTML = '';
+    }
+
+    function startSession() {
+      if (!isAuthorized()) {
+        switchTab('overview');
+        document.getElementById('pay-section').classList.remove('hidden');
+        document.getElementById('pay-section').scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+      const scenario = SCENARIOS[currentScenario];
+      messages = [];
+      turnCount = 0;
+      sessionActive = true;
+      document.getElementById('personaAvatar').textContent = scenario.avatar;
+      document.getElementById('personaName').textContent = scenario.persona;
+      document.getElementById('personaRole').textContent = scenario.name;
+      document.getElementById('turnCounter').textContent = '0 ターン';
+      document.getElementById('chatMessages').innerHTML = '<div class="system-msg">1on1が始まりました。最初の一言で安心感を作ることを意識してください。</div>';
+      document.getElementById('userInput').value = '';
+      autoResize(document.getElementById('userInput'));
+      resetPracticePanel();
+      addMessage('assistant', OPENING_MESSAGES[currentScenario]);
+    }
+
+    function addMessage(role, content) {
+      const scenario = SCENARIOS[currentScenario];
+      const chatEl = document.getElementById('chatMessages');
+      const div = document.createElement('div');
+      div.className = 'chat-message ' + role;
+      div.innerHTML = '<div class="msg-avatar">' + (role === 'assistant' ? scenario.avatar : '👔') + '</div><div class="msg-bubble">' + escapeHtml(content) + '</div>';
+      chatEl.appendChild(div);
+      chatEl.scrollTop = chatEl.scrollHeight;
+      messages.push({ role: role, content: content });
+      if (role === 'user') {
+        turnCount += 1;
+        document.getElementById('turnCounter').textContent = turnCount + ' ターン';
+      }
+    }
+
+    function showTyping() {
+      const chatEl = document.getElementById('chatMessages');
+      const div = document.createElement('div');
+      div.className = 'typing-indicator';
+      div.id = 'typingIndicator';
+      div.innerHTML = '<div class="msg-avatar">' + SCENARIOS[currentScenario].avatar + '</div><div class="typing-dots"><span></span><span></span><span></span></div>';
+      chatEl.appendChild(div);
+      chatEl.scrollTop = chatEl.scrollHeight;
+    }
+
+    function hideTyping() {
+      const el = document.getElementById('typingIndicator');
+      if (el) el.remove();
+    }
+
+    async function sendMessage() {
+      const input = document.getElementById('userInput');
+      const text = input.value.trim();
+      if (!sessionActive) {
+        alert('先にシナリオを開始してください。');
+        return;
+      }
+      if (!text || isLoading) return;
+
+      input.value = '';
+      autoResize(input);
+      isLoading = true;
+      document.getElementById('sendBtn').disabled = true;
+      addMessage('user', text);
+      showTyping();
+
+      const apiMessages = messages
+        .filter(function(message, index) { return !(index === 0 && message.role === 'assistant'); })
+        .map(function(message) { return { role: message.role, content: message.content }; });
+
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'chat', scenario: currentScenario, messages: apiMessages })
+        });
+        const data = await response.json();
+        hideTyping();
+        addMessage('assistant', data.reply || ('（エラー: ' + (data.error || '不明なエラー') + '）'));
+      } catch (error) {
+        hideTyping();
+        addMessage('assistant', '（通信エラーが発生しました）');
+      }
+
+      isLoading = false;
+      document.getElementById('sendBtn').disabled = false;
+      input.focus();
+    }
+
+    async function endSession() {
+      if (!sessionActive || messages.length < 2) {
+        alert('もう少し会話してからセッションを終了してください。');
+        return;
+      }
+      const panel = document.getElementById('feedbackPanel');
+      const loading = document.getElementById('feedbackLoading');
+      const contentEl = document.getElementById('feedbackContent');
+      const actions = document.getElementById('feedbackActions');
+      panel.classList.remove('hidden');
+      loading.classList.remove('hidden');
+      contentEl.classList.add('hidden');
+      actions.classList.add('hidden');
+      panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      const apiMessages = messages
+        .filter(function(message, index) { return !(index === 0 && message.role === 'assistant'); })
+        .map(function(message) { return { role: message.role, content: message.content }; });
+
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'feedback', scenario: currentScenario, messages: apiMessages })
+        });
+        const data = await response.json();
+        loading.classList.add('hidden');
+        contentEl.classList.remove('hidden');
+        actions.classList.remove('hidden');
+        contentEl.innerHTML = formatFeedback(data.feedback || 'フィードバックを取得できませんでした。');
+        state.practiceLogs.unshift({ scenarioId: currentScenario, createdAt: new Date().toLocaleString('ja-JP'), scores: extractScores(data.feedback || '') });
+        state.practiceLogs = state.practiceLogs.slice(0, 30);
+        saveState();
+        renderMetrics();
+      } catch (error) {
+        loading.classList.add('hidden');
+        contentEl.classList.remove('hidden');
+        actions.classList.remove('hidden');
+        contentEl.textContent = '通信エラーが発生しました。';
+      }
+    }
+
+    function extractScores(text) {
+      const listeningMatch = text.match(/傾聴力[：:]\s*(\d+)/);
+      const probingMatch = text.match(/質問力[：:]\s*(\d+)/);
+      const empathyMatch = text.match(/共感力[：:]\s*(\d+)/);
+      const safetyMatch = text.match(/心理的安全性[：:]\s*(\d+)/);
+      return {
+        listening: normalizeTwentyScore(listeningMatch ? Number(listeningMatch[1]) : 12),
+        probing: normalizeTwentyScore(probingMatch ? Number(probingMatch[1]) : 11),
+        empathy: normalizeTwentyScore(empathyMatch ? Number(empathyMatch[1]) : 12),
+        safety: normalizeTwentyScore(safetyMatch ? Number(safetyMatch[1]) : 12)
+      };
+    }
+
+    function normalizeTwentyScore(value) {
+      const safeValue = isNaN(value) ? 12 : value;
+      return Math.max(20, Math.min(100, Math.round((safeValue / 20) * 100)));
+    }
+
+    function formatFeedback(text) {
+      return escapeHtml(text).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+    }
+
+    function handleKeydown(event) {
+      if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+      }
+    }
+
+    function autoResize(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+    }
+
+    function renderPrepOutput() {
+      const purpose = document.getElementById('prepPurpose').value;
+      const stateLabel = document.getElementById('prepState').value;
+      const time = document.getElementById('prepTime').value;
+      const risk = document.getElementById('prepRisk').value;
+      const questionSet = getPrepQuestions(purpose);
+      document.getElementById('prepOutput').innerHTML =
+        '<div class="prep-item"><div class="bullet">1</div><div><strong>今日の目的</strong><div>' + escapeHtml(purpose) + '</div></div></div>' +
+        '<div class="prep-item"><div class="bullet">2</div><div><strong>最初の3質問</strong><div>' + questionSet.map(escapeHtml).join('<br>') + '</div></div></div>' +
+        '<div class="prep-item"><div class="bullet">3</div><div><strong>今日の注意点</strong><div>' + escapeHtml(stateLabel + 'ので、' + risk + '状態に注意。' + time + 'の中で、結論より整理を優先します。') + '</div></div></div>' +
+        '<div class="prep-item"><div class="bullet">4</div><div><strong>避けたい一言</strong><div>「それは気にしすぎだよ」「じゃあこうしよう」のように、相手の整理より先に結論へ飛ぶ返し。</div></div></div>';
+      state.prepMemo = { purpose: purpose, stateLabel: stateLabel, time: time, risk: risk, questionSet: questionSet };
+      saveState();
+    }
+
+    function getPrepQuestions(purpose) {
+      if (purpose.includes('元気がない')) return ['最近、特にしんどさが出やすい場面ってどんな時？', '仕事量そのものと、気持ちの重さだと今はどちらが大きそう？', 'すぐ答えがなくても大丈夫だけど、何か一緒に整理できそうなことはある？'];
+      if (purpose.includes('離職')) return ['最近そう感じることが増えているのか、今日特に強い感覚なのかを聞かせてほしい。', '何が一番そう感じさせているのか、少し整理したい。', '次回までに一つだけ、気持ちが大きく動いた場面を覚えておいてもらえる？'];
+      if (purpose.includes('仕事量')) return ['今いちばん負担が大きいのは、どの業務や時間帯？', '忙しさの中でも、相談しづらさや進めにくさはある？', '今週だけでも少し楽にするなら、どこから触るのがよさそう？'];
+      if (purpose.includes('若手')) return ['最近、うまくいかないと感じる場面はどんな時が多い？', '仕事の内容そのものと、周りとの比較だと、どちらが近い？', '次に少しだけ前へ進めそうなことは何だと思う？'];
+      return ['最近、やりづらさを感じる場面はどんな時が多い？', 'その時に出やすい気持ちは、不安、もやもや、怒りだとどれに近い？', '今日は結論より、起きていることを整理するところから一緒にやりたい。'];
+    }
+
+    function saveReview() {
+      const signal = document.getElementById('reviewSignal').value.trim();
+      const reflection = document.getElementById('reviewReflection').value.trim();
+      const nextAction = document.getElementById('reviewNextAction').value.trim();
+      if (!signal && !reflection && !nextAction) return;
+      state.reviews.unshift({ signal: signal, reflection: reflection, nextAction: nextAction, createdAt: new Date().toLocaleString('ja-JP') });
+      state.reviews = state.reviews.slice(0, 8);
+      document.getElementById('reviewSignal').value = '';
+      document.getElementById('reviewReflection').value = '';
+      document.getElementById('reviewNextAction').value = '';
+      saveState();
+      renderReviewHistory();
+      renderMetrics();
+    }
+
+    function renderReviewHistory() {
+      if (!state.reviews.length) {
+        reviewHistory.innerHTML = '<div class="note-block muted">まだ保存されたふり返りはありません。</div>';
+        return;
+      }
+      reviewHistory.innerHTML = state.reviews.map(function(review) {
+        return '<div class="note-block" style="margin-top:12px;"><strong>' + escapeHtml(review.createdAt) + '</strong><div style="margin-top:10px;"><strong>気になった言葉</strong><div>' + escapeHtml(review.signal || '未入力') + '</div></div><div style="margin-top:10px;"><strong>自分のふり返り</strong><div>' + escapeHtml(review.reflection || '未入力') + '</div></div><div style="margin-top:10px;"><strong>次回の宿題</strong><div>' + escapeHtml(review.nextAction || '未入力') + '</div></div></div>';
+      }).join('');
+    }
+
+    function renderMetrics() {
+      const completed = state.completedCourses.length;
+      const practices = state.practiceLogs.length;
+      const reviews = state.reviews.length;
+      const aggregate = aggregateScores();
+      const weakestKey = findWeakestKey(aggregate);
+      const labels = { empathy: '共感', listening: '受け止め', probing: '深掘り', safety: '安心感' };
+
+      completedCount.innerHTML = '<strong>' + completed + '/10</strong>';
+      practiceCount.innerHTML = '<strong>' + practices + '回</strong>';
+      priorityChip.innerHTML = '<strong>' + labels[weakestKey] + '</strong>';
+      homeCompletedStat.textContent = completed + '/10';
+      homePracticeStat.textContent = String(practices);
+      dashboardCompleted.textContent = completed + '/10';
+      dashboardPractice.textContent = String(practices);
+      dashboardWeakness.textContent = labels[weakestKey];
+      dashboardReviews.textContent = String(reviews);
+      dashboardScores.innerHTML = createScoreItems(aggregate);
+      dashboardActions.innerHTML = [
+        recommendAction(weakestKey),
+        completed < 10 ? '未完了の講座を先に進め、見立ての土台を増やす' : '講座は一通り完了しているので、実務ケースを増やして定着させる',
+        reviews < 3 ? '本番後のふり返りを3件以上ためて、次回の宿題を回し始める' : 'ふり返りメモをもとに、次回の面談前準備をより具体化する'
+      ].map(function(action, index) { return '<div class="timeline-item"><div class="bullet">' + (index + 1) + '</div><div>' + escapeHtml(action) + '</div></div>'; }).join('');
+    }
+
+    function aggregateScores() {
+      if (!state.practiceLogs.length) return Object.assign({}, defaultScores);
+      const totals = { empathy: 0, listening: 0, probing: 0, safety: 0 };
+      state.practiceLogs.forEach(function(log) {
+        totals.empathy += log.scores.empathy;
+        totals.listening += log.scores.listening;
+        totals.probing += log.scores.probing;
+        totals.safety += log.scores.safety;
+      });
+      return {
+        empathy: Math.round(totals.empathy / state.practiceLogs.length),
+        listening: Math.round(totals.listening / state.practiceLogs.length),
+        probing: Math.round(totals.probing / state.practiceLogs.length),
+        safety: Math.round(totals.safety / state.practiceLogs.length)
+      };
+    }
+
+    function createScoreItems(scores) {
+      const labels = [
+        { key: 'empathy', label: '共感' },
+        { key: 'listening', label: '受け止め' },
+        { key: 'probing', label: '深掘り' },
+        { key: 'safety', label: '安心感' }
+      ];
+      return labels.map(function(item) {
+        return '<div class="score-item"><span>' + item.label + '</span><div class="bar"><span style="width:' + scores[item.key] + '%;"></span></div><strong>' + scores[item.key] + '/100</strong></div>';
+      }).join('');
+    }
+
+    function findWeakestKey(scores) {
+      return Object.entries(scores).sort(function(a, b) { return a[1] - b[1]; })[0][0];
+    }
+
+    function recommendAction(key) {
+      if (key === 'probing') return '次の重点は深掘りです。「どんな時」「どこが一番」の質問を1つ足してください。';
+      if (key === 'safety') return '次の重点は安心感です。結論を急がず、「無理に話さなくて大丈夫」を先に置いてください。';
+      if (key === 'empathy') return '次の重点は共感です。事実確認の前に、相手の重さや不安を一度言葉にしてください。';
+      return '次の重点は受け止めです。相手の言葉を短く要約し、「こういうことかな」と返す回数を増やしてください。';
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;');
+    }
+  </script>
 </body>
 </html>
