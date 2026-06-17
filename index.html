@@ -52,6 +52,7 @@
     textarea { min-height: 110px; resize: vertical; }
     .hidden { display: none !important; }
     .app-shell { width: min(1320px, 100%); margin: 0 auto; }
+    #app-container { display: none; }
     .topbar {
       display: flex;
       align-items: center;
@@ -1164,6 +1165,7 @@
         paySection.classList.remove('hidden');
       }
 
+      document.getElementById('app-container').style.display = 'block';
       bindEvents();
       renderAll();
     }
