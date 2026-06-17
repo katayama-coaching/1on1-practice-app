@@ -78,71 +78,100 @@ const FEEDBACK_PROMPT = `あなたは1on1ミーティングのプロフェッシ
 
 日本語で、温かみがありながら建設的に。全項目を必ず完結させること。`;
 
-async function callClaude(system, messages, maxTokens = 300, model = "claude-haiku-4-5-20251001") {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error("ANTHROPIC_API_KEY が設定されていません");
+async function callOpenAI({ system, messages, maxOutputTokens = 400, model = 'gpt-5.4-mini' }) {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error('OPENAI_API_KEY が設定されていません');
 
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
+  const input = [
+    {
+      role: 'system',
+      content: [{ type: 'input_text', text: system }],
+    },
+    ...messages.map((message) => ({
+      role: message.role,
+      content: [{ type: 'input_text', text: message.content }],
+    })),
+  ];
+
+  const response = await fetch('https://api.openai.com/v1/responses', {
+    method: 'POST',
     headers: {
-      "Content-Type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
       model,
-      max_tokens: maxTokens,
-      system,
-      messages,
+      input,
+      max_output_tokens: maxOutputTokens,
     }),
   });
 
+  const data = await response.json();
   if (!response.ok) {
-    const err = await response.text();
-    throw new Error(`Anthropic API error ${response.status}: ${err}`);
+    const detail = data?.error?.message || 'OpenAI API error';
+    throw new Error(detail);
   }
 
-  const data = await response.json();
-  return data.content[0].text;
+  const text = data.output_text || data.output
+    ?.flatMap((item) => item.content || [])
+    ?.filter((item) => item.type === 'output_text')
+    ?.map((item) => item.text)
+    ?.join('');
+
+  if (!text) {
+    throw new Error('OpenAI API response did not contain text output');
+  }
+
+  return text;
 }
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   const { action, scenario, messages } = req.body;
 
   try {
-    if (action === "chat") {
+    if (action === 'chat') {
       const scenarioData = SCENARIOS[scenario];
-      if (!scenarioData) return res.status(400).json({ error: "無効なシナリオです" });
+      if (!scenarioData) {
+        return res.status(400).json({ error: '無効なシナリオです' });
+      }
 
-      const reply = await callClaude(scenarioData.systemPrompt, messages, 300, "claude-sonnet-4-6");
+      const reply = await callOpenAI({
+        system: scenarioData.systemPrompt,
+        messages,
+        maxOutputTokens: 400,
+        model: 'gpt-5.4-mini',
+      });
+
       return res.status(200).json({ reply });
     }
 
-    if (action === "feedback") {
+    if (action === 'feedback') {
       const conversationLog = messages
-        .map((m) => `【${m.role === "user" ? "上司" : "部下"}】${m.content}`)
-        .join("\n");
+        .map((message) => `【${message.role === 'user' ? '上司' : '部下'}】${message.content}`)
+        .join('\n');
 
-      const feedback = await callClaude(
-        FEEDBACK_PROMPT,
-        [
+      const feedback = await callOpenAI({
+        system: FEEDBACK_PROMPT,
+        messages: [
           {
-            role: "user",
+            role: 'user',
             content: `以下の1on1会話ログを分析してフィードバックを提供してください。\n\nシナリオ：${SCENARIOS[scenario]?.name || scenario}\n\n会話ログ：\n${conversationLog}`,
           },
         ],
-        2000
-      );
+        maxOutputTokens: 2200,
+        model: 'gpt-5.4-mini',
+      });
+
       return res.status(200).json({ feedback });
     }
 
-    return res.status(400).json({ error: "無効なアクションです" });
+    return res.status(400).json({ error: '無効なアクションです' });
   } catch (error) {
-    console.error("API Error:", error);
-    return res.status(500).json({ error: "APIエラーが発生しました: " + error.message });
+    console.error('API Error:', error);
+    return res.status(500).json({ error: 'APIエラーが発生しました: ' + error.message });
   }
 }
