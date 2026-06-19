@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1on1基礎コーチング講座 | 実践アプリ</title>
+  <meta name="description" content="AIコーチングと1on1実践支援を一体化した、中小零細企業向けの1on1基礎コーチング講座アプリ。">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">1</div>
+        <div>
+          <h1>1on1基礎コーチング講座</h1>
+          <p>学習編・実践編・本番前後支援をひとつにまとめた実務アプリ</p>
+        </div>
+      </div>
+      <div class="status-strip">
+        <div class="pill">講座完了 <strong id="completedCount">0/10</strong></div>
+        <div class="pill">練習回数 <strong id="practiceCount">0回</strong></div>
+        <div class="pill">次の重点 <strong id="priorityChip">深掘り</strong></div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <h2>使い方</h2>
+        <p>まずは講座で学び、次にケース練習をして、本番前後の支援画面で現場へつなげます。</p>
+
+        <div class="nav-list">
+          <button class="nav-button active" data-tab="overview">
+            ホーム
+            <small>講座の全体像と進め方</small>
+          </button>
+          <button class="nav-button" data-tab="course">
+            10回講座
+            <small>心理理解と対話の進め方を学ぶ</small>
+          </button>
+          <button class="nav-button" data-tab="practice">
+            ケース練習
+            <small>見立て・注目点・次の一手を確認</small>
+          </button>
+          <button class="nav-button" data-tab="prep">
+            面談前AIコーチ
+            <small>今回の1on1の軸を整える</small>
+          </button>
+          <button class="nav-button" data-tab="review">
+            面談後ふり返り
+            <small>気になった言葉と次回の宿題を残す</small>
+          </button>
+          <button class="nav-button" data-tab="dashboard">
+            ミニ管理画面
+            <small>苦手傾向と進捗を確認</small>
+          </button>
+        </div>
+
+        <div id="courseSidebar" class="course-list"></div>
+      </aside>
+
+      <main class="main-panel">
+        <section class="tab-section active" id="overviewSection">
+          <div class="panel-head">
+            <div>
+              <span class="badge">中小零細企業向けの実務設計</span>
+              <h2>今日の1on1に向けて、<br>何から始めるかを<br>迷わないためのアプリです。</h2>
+              <p>
+                単なる会話練習ではなく、基礎講座、ケース練習、面談前整理、面談後ふり返りまでを
+                一つの流れで使えるようにした、1on1実践アプリです。
+              </p>
+            </div>
+          </div>
+
+          <div class="hero-grid">
+            <article class="section-card hero-banner">
+              <h3>学ぶ、試す、整える、残す。<br>次の1on1まで一本でつなぐ。</h3>
+              <p>
+                講座で土台を学び、ケースで試し、面談前に今回の軸を整え、終わったら次回の宿題を残します。
+              </p>
+              <div class="action-row">
+                <button class="primary-button" id="jumpCoachButton">今日の1on1前を整える</button>
+                <button class="secondary-button" id="startCourseButton">基礎講座を始める</button>
+                <button class="ghost-button" id="jumpPracticeButton">ケース練習を試す</button>
+              </div>
+            </article>
+
+            <div class="grid-2">
+              <article class="mini-card">
+                <span class="stat-value" id="homeCompletedStat">0/10</span>
+                <h3>講座の進捗</h3>
+                <p class="muted">安心して話してもらう入り方から、離職予兆への向き合い方まで段階的に学べます。</p>
+              </article>
+              <article class="mini-card">
+                <span class="stat-value" id="homePracticeStat">0</span>
+                <h3>ケース練習回数</h3>
+                <p class="muted">練習を重ねるほど、苦手傾向が見え、次回の重点がはっきりします。</p>
+              </article>
+              <article class="mini-card">
+                <h3>このアプリが返すもの</h3>
+                <div class="chip-row" style="margin-top: 12px;">
+                  <span class="chip">相手の状態の見立て</span>
+                  <span class="chip">注目ポイント</span>
+                  <span class="chip">面談前の軸</span>
+                  <span class="chip">避けたい返し方</span>
+                </div>
+              </article>
+              <article class="mini-card">
+                <h3>実務につなぐ機能</h3>
+                <div class="chip-row" style="margin-top: 12px;">
+                  <span class="chip">面談前AIコーチ</span>
+                  <span class="chip">本番後ふり返り</span>
+                  <span class="chip">次回の宿題</span>
+                  <span class="chip">継続メモ</span>
+                </div>
+              </article>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-top: 18px;">
+            <article class="section-card">
+              <h3>次にやること</h3>
+              <div class="timeline-list" id="homeNextActions"></div>
+            </article>
+            <article class="section-card">
+              <h3>今日の面談前メモ</h3>
+              <div id="homePrepMemo" class="note-block muted">まだ面談前メモはありません。</div>
+            </article>
+          </div>
+
+          <div class="grid-2" style="margin-top: 16px;">
+            <article class="section-card">
+              <h3>直近のふり返り</h3>
+              <div id="homeLatestReview" class="note-block muted">まだ保存されたふり返りはありません。</div>
+            </article>
+            <article class="section-card">
+              <h3>おすすめの使い方</h3>
+              <div class="timeline-list">
+                <div class="timeline-item"><div class="bullet">1</div><div><strong>学ぶ</strong><div>基礎講座で、1on1の土台を身につける</div></div></div>
+                <div class="timeline-item"><div class="bullet">2</div><div><strong>試す</strong><div>ケース練習で、返し方と見立てを確認する</div></div></div>
+                <div class="timeline-item"><div class="bullet">3</div><div><strong>整える</strong><div>面談前AIコーチで、今回の面談方針を固める</div></div></div>
+                <div class="timeline-item"><div class="bullet">4</div><div><strong>残す</strong><div>面談後ふり返りで、次回への宿題を残す</div></div></div>
+              </div>
+            </article>
+          </div>
+
+          <div class="grid-4" style="margin-top: 18px;">
+            <article class="course-card">
+              <h4>1. 学習編</h4>
+              <p class="muted">10回の講座で、相手の心理理解、安心感づくり、深掘り、終わり方まで学びます。</p>
+            </article>
+            <article class="course-card">
+              <h4>2. 実践編</h4>
+              <p class="muted">疲弊、離職予兆、若手育成などのケースで、返答を試して見立てを確認します。</p>
+            </article>
+            <article class="course-card">
+              <h4>3. 本番支援</h4>
+              <p class="muted">面談前AIコーチで、今回の面談目的、最初の一言、急がないことを固めます。</p>
+            </article>
+            <article class="course-card">
+              <h4>4. 定着支援</h4>
+              <p class="muted">面談後に気になった言葉と次回の宿題を残し、継続利用につなげます。</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-section" id="courseSection">
+          <div class="panel-head">
+            <div>
+              <span class="badge">10回の基礎コーチング講座</span>
+              <h2 id="courseTitle"></h2>
+              <p id="courseIntro"></p>
+            </div>
+            <div class="badge" id="courseStatusBadge">未完了</div>
+          </div>
+
+          <div class="grid-2">
+            <article class="section-card">
+              <h3>今回の狙い</h3>
+              <div class="detail-list" id="courseGoals"></div>
+            </article>
+            <article class="section-card">
+              <h3>見るべきポイント</h3>
+              <div class="signal-list" id="courseSignals"></div>
+            </article>
+          </div>
+
+          <div class="grid-2" style="margin-top: 16px;">
+            <article class="section-card employee-box">
+              <div class="message-label">部下の発言例</div>
+              <p id="courseEmployeeLine"></p>
+            </article>
+            <article class="section-card coach-box">
+              <div class="message-label">コーチの着眼点</div>
+              <p id="courseCoachLine"></p>
+            </article>
+          </div>
+
+          <div class="grid-3" style="margin-top: 16px;">
+            <article class="mini-card">
+              <div class="mini-label">今回のGROW位置</div>
+              <strong class="mini-emphasis" id="courseGrowFocus"></strong>
+              <p class="muted" id="courseGrowHint"></p>
+            </article>
+            <article class="mini-card">
+              <div class="mini-label">難易度</div>
+              <strong class="mini-emphasis" id="courseLevel"></strong>
+              <p class="muted" id="courseLevelHint"></p>
+            </article>
+            <article class="mini-card">
+              <div class="mini-label">少し難しいポイント</div>
+              <strong class="mini-emphasis" id="courseStretchTitle"></strong>
+              <p class="muted" id="courseStretchBody"></p>
+            </article>
+          </div>
+
+          <article class="section-card" style="margin-top: 16px;">
+            <h3>返答の方向性を選ぶ</h3>
+            <p class="muted">模範解答を覚えるのではなく、どういう意図で返すかを理解する練習です。</p>
+            <div class="option-grid" id="courseOptions"></div>
+            <div class="analysis-card hidden" id="courseFeedbackBox" style="margin-top: 16px;"></div>
+            <div class="action-row">
+              <button class="primary-button" id="markCompleteButton">この回を完了にする</button>
+              <button class="secondary-button" id="nextCourseButton">次の回へ</button>
+              <button class="ghost-button" id="courseToCoachButton">この学びを今日の面談前に整える</button>
+            </div>
+          </article>
+        </section>
+
+        <section class="tab-section" id="practiceSection">
+          <div class="panel-head">
+            <div>
+              <span class="badge">ケース練習</span>
+              <h2>部下の言葉のどこを見るか、<br>次にどう返すかを練習する。</h2>
+              <p>シナリオを選び、あなたの返答を書いてください。AIコーチが見立て、優先段階、次の一手、避けたい返し方を返します。気になるテーマは、そのまま面談前AIコーチにつなげられます。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="section-card">
+              <h3>シナリオ選択</h3>
+              <div class="field" style="margin-top: 12px;">
+                <label for="scenarioSelect">練習するテーマ</label>
+                <select id="scenarioSelect"></select>
+              </div>
+              <div class="message-box employee-box">
+                <div class="message-label">部下の背景</div>
+                <p id="scenarioContext"></p>
+              </div>
+              <div class="message-box" style="margin-top: 12px;">
+                <div class="message-label">今の部下の発言</div>
+                <p id="scenarioEmployeeLine"></p>
+              </div>
+              <div class="tag-row" id="scenarioTags" style="margin-top: 12px;"></div>
+            </article>
+
+            <article class="section-card">
+              <h3>あなたの返答</h3>
+              <div class="field" style="margin-top: 12px;">
+                <label for="replyInput">どう返しますか</label>
+                <textarea id="replyInput" placeholder="例: 無理に話さなくて大丈夫だけど、最近かなり大変そうに見えていて心配している。いちばん負担が大きいのはどのあたり？"></textarea>
+                <small>共感、具体化、質問、支援確認の4つが入ると実務で使いやすくなります。</small>
+              </div>
+              <div class="action-row">
+                <button class="primary-button" id="analyzeReplyButton">返答を分析する</button>
+                <button class="ghost-button" id="fillSuggestionButton">見本例を入れる</button>
+              </div>
+              <div class="message-box coach-box" style="margin-top: 14px;">
+                <div class="message-label">返答の見本例</div>
+                <p id="exampleReply"></p>
+              </div>
+            </article>
+          </div>
+
+          <div class="analysis-card hidden" id="practiceResultBox" style="margin-top: 18px;">
+            <h3>AIコーチの見立て</h3>
+            <div class="analysis-columns" style="margin-top: 14px;">
+              <div>
+                <div class="message-box employee-box">
+                  <div class="message-label">相手の状態の見立て</div>
+                  <p id="resultMindset"></p>
+                </div>
+                <div class="message-box" style="margin-top: 12px;">
+                  <div class="message-label">今の優先段階</div>
+                  <p id="resultPriority"></p>
+                </div>
+                <div class="message-box" style="margin-top: 12px;">
+                  <div class="message-label">GROWで見ると</div>
+                  <p id="resultGrow"></p>
+                </div>
+                <div class="score-grid" id="resultScores"></div>
+              </div>
+              <div>
+                <div class="message-box">
+                  <div class="message-label">注目すべき言葉</div>
+                  <p id="resultSignals"></p>
+                </div>
+                <div class="message-box coach-box" style="margin-top: 12px;">
+                  <div class="message-label">コーチからの講評</div>
+                  <p id="resultCoach"></p>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-2" style="margin-top: 16px;">
+              <div class="section-card" style="padding: 0; box-shadow: none; background: transparent; border: none;">
+                <h3>次の一手候補</h3>
+                <div class="suggestion-list" id="resultSuggestions"></div>
+              </div>
+              <div class="section-card" style="padding: 0; box-shadow: none; background: transparent; border: none;">
+                <h3>避けたい返し方</h3>
+                <div class="warning-list" id="resultWarnings"></div>
+              </div>
+            </div>
+
+            <div class="grid-2" style="margin-top: 16px;">
+              <div class="section-card">
+                <h3>次回の1on1で使える一言</h3>
+                <div class="timeline-list" id="resultNextLines"></div>
+              </div>
+              <div class="section-card">
+                <h3>面談後フォロー文例</h3>
+                <div class="timeline-card" id="resultFollowup"></div>
+              </div>
+            </div>
+            <div class="action-row">
+              <button class="ghost-button" id="practiceToCoachButton">このテーマを今日の面談に引き寄せて整理する</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-section" id="prepSection">
+          <div class="panel-head">
+            <div>
+              <span class="badge">面談前AIコーチ</span>
+              <h2>今回の1on1で何を目指し、<br>何を見極めるかを整える。</h2>
+              <p>答えを教わる前に、自分の軸を言葉にするための画面です。Goal、Reality、Options、Willの順で、今回の面談方針を小さく固めます。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="section-card">
+              <div class="coach-stage">
+                <div class="coach-stage-label" id="coachPhaseLabel">面談前の整理を始める</div>
+                <div class="coach-stage-progress">
+                  <span class="active"></span><span></span><span></span><span></span>
+                </div>
+              </div>
+
+              <div class="starter-grid" id="coachStarterGrid">
+                <button class="starter-button" data-starter="今回いちばん確かめたいことを整理したい">今回いちばん確かめたいことを整理したい</button>
+                <button class="starter-button" data-starter="どこまで踏み込むかの軸を整理したい">どこまで踏み込むかの軸を整理したい</button>
+                <button class="starter-button" data-starter="今回の面談で何を目指すか整理したい">今回の面談で何を目指すか整理したい</button>
+                <button class="starter-button" data-starter="今回は何を手放すか整理したい">今回は何を手放すか整理したい</button>
+              </div>
+
+              <div class="coach-chat-card" id="coachChatBox">
+                <div class="coach-chat-row coach-chat-system">
+                  <div class="coach-bubble">まずはスターターを選ぶか、下の入力欄から今回の1on1前に整理したいことを書いてください。最後に右側へ、今日そのまま使える4点メモを残します。</div>
+                </div>
+              </div>
+
+              <div class="field" style="margin-top: 16px;">
+                <label for="coachInput">今回の1on1前に整理したいこと</label>
+                <textarea id="coachInput" placeholder="例: 退職を考えていそうな部下との1on1で、どこまで踏み込むのが適切か整理したい"></textarea>
+                <small>短くても構いません。まずは今いちばん気になっていることから始めてください。</small>
+              </div>
+
+              <div class="action-row">
+                <button class="primary-button" id="sendCoachButton">今回の面談方針を整理する</button>
+                <button class="secondary-button" id="resetCoachButton">この整理をやり直す</button>
+              </div>
+            </article>
+
+            <article class="section-card">
+              <h3>今回の面談メモ</h3>
+              <div class="prep-list" id="prepOutput">
+                <div class="prep-item">
+                  <div class="bullet">1</div>
+                  <div>ここに、面談前AIコーチで整理した4点メモが表示されます。面談直前はこの欄だけ見返せば十分です。</div>
+                </div>
+              </div>
+              <div class="action-row">
+                <button class="ghost-button" id="coachToReviewButton">面談後にふり返りを残す</button>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-section" id="reviewSection">
+          <div class="panel-head">
+            <div>
+              <span class="badge">面談後ふり返り</span>
+              <h2>面談が終わったあとに、<br>次回につながるメモを残す。</h2>
+              <p>うまくいったかどうかだけで終わらせず、相手の気になった言葉と、自分の改善点を残します。ここで残した内容は、次回の面談前整理にもつながります。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="section-card">
+              <div class="field">
+                <label for="reviewSignal">相手の気になった言葉</label>
+                <textarea id="reviewSignal" placeholder="例: 『忙しいだけです』と言っていたが、言い切る前に少し間があった。"></textarea>
+              </div>
+              <div class="field" style="margin-top: 12px;">
+                <label for="reviewReflection">自分のふり返り</label>
+                <textarea id="reviewReflection" placeholder="例: 解決策を早く出そうとしてしまい、感情を受け止める時間が短かった。"></textarea>
+              </div>
+              <div class="field" style="margin-top: 12px;">
+                <label for="reviewNextAction">次回の宿題</label>
+                <textarea id="reviewNextAction" placeholder="例: 次回は『最近いちばんしんどい場面』を具体的に聞く。"></textarea>
+              </div>
+              <div class="action-row">
+                <button class="primary-button" id="saveReviewButton">ふり返りを保存する</button>
+              </div>
+            </article>
+
+            <article class="section-card">
+              <h3>直近のふり返り</h3>
+              <div id="reviewHistory"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-section" id="dashboardSection">
+          <div class="panel-head">
+            <div>
+              <span class="badge">ミニ管理画面</span>
+              <h2>少人数の会社でも見やすい、<br>最低限の進捗と苦手傾向。</h2>
+              <p>高度な分析ではなく、誰がどこで詰まりやすいか、次に何を重点にすべきかが見えることを重視しています。</p>
+            </div>
+          </div>
+
+          <div class="grid-4" style="margin-top: 18px;">
+            <article class="mini-card">
+              <span class="stat-value" id="dashboardCompleted">0/10</span>
+              <h3>講座完了数</h3>
+              <p class="muted">段階学習の進み具合</p>
+            </article>
+            <article class="mini-card">
+              <span class="stat-value" id="dashboardPractice">0</span>
+              <h3>練習回数</h3>
+              <p class="muted">ケース練習の累計</p>
+            </article>
+            <article class="mini-card">
+              <span class="stat-value" id="dashboardWeakness">深掘り</span>
+              <h3>いまの重点</h3>
+              <p class="muted">次回の優先テーマ</p>
+            </article>
+            <article class="mini-card">
+              <span class="stat-value" id="dashboardReviews">0</span>
+              <h3>ふり返り保存数</h3>
+              <p class="muted">本番後メモの蓄積</p>
+            </article>
+          </div>
+
+          <div class="grid-2" style="margin-top: 16px;">
+            <article class="section-card">
+              <h3>苦手傾向</h3>
+              <div class="score-grid" id="dashboardScores"></div>
+            </article>
+            <article class="section-card">
+              <h3>次におすすめのアクション</h3>
+              <div class="timeline-list" id="dashboardActions"></div>
+            </article>
+          </div>
+
+          <div class="footer-note">
+            このプロトタイプではブラウザ保存を使っています。将来は管理者別、チーム別、受講者別に拡張できます。
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
