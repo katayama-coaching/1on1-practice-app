@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1on1基礎コーチング講座 | AI実践アプリ</title>
+  <meta name="description" content="1on1の進め方に迷う管理職向け。10回講座、ケース練習、本番前準備、ふり返りを一体化したAI実践アプリ。">
+    <link rel="stylesheet" href="./main.css?v=20260625-0205">
+</head>
+<body>
+  <script>
+    window.__showAppError = function (message) {
+      try {
+        const errEl = document.getElementById('lg-err');
+        const gate = document.getElementById('login-gate');
+        if (gate && gate.style.display !== 'none') {
+          if (errEl) errEl.textContent = message;
+          return;
+        }
+      } catch {}
+      alert(message);
+    };
+
+    window.__triggerLogin = function () {
+      const input = document.getElementById('lg-email');
+      const errEl = document.getElementById('lg-err');
+      const btn = document.getElementById('lg-btn');
+      const email = ((input && input.value) || '').trim();
+      if (errEl) errEl.textContent = '';
+      if (!email || !email.includes('@')) {
+        if (errEl) errEl.textContent = '有効なメールアドレスを入力してください';
+        return;
+      }
+      try {
+        const isFilePreview = window.location.protocol === 'file:';
+        if (btn) {
+          btn.disabled = true;
+          btn.textContent = isFilePreview ? '読み込み中...' : '確認中...';
+        }
+        if (isFilePreview) {
+          if (typeof window.__completeLogin === 'function') {
+            return window.__completeLogin(email);
+          }
+          localStorage.setItem('user_email', email);
+          const gate = document.getElementById('login-gate');
+          if (gate) gate.style.display = 'none';
+          if (btn) { btn.disabled = false; btn.textContent = '続ける'; }
+          console.error('[App] __completeLogin が未定義です。main-preview.js が正常に読み込まれていない可能性があります。');
+          return;
+        }
+        if (typeof window.doLogin === 'function') {
+          return window.doLogin();
+        }
+        window.location.reload();
+      } catch (error) {
+        if (errEl) errEl.textContent = 'ログイン処理に失敗しました。';
+      }
+    };
+  </script>
+  <div id="login-gate">
+    <div class="lg-box">
+      <div class="lg-badge">1on1基礎コーチング講座</div>
+      <h1 class="lg-title">何を聞けばいいか<br>迷う管理職のための実践アプリ</h1>
+      <p class="lg-sub">企業導入向けの1on1学習アプリです。メールアドレスでログインして利用を開始できます。</p>
+      <input type="email" id="lg-email" class="lg-input" placeholder="example@company.com" autocomplete="email">
+      <div class="lg-err" id="lg-err"></div>
+      <button class="lg-btn" id="lg-btn" onclick="window.__triggerLogin()">続ける</button>
+    </div>
+  </div>
+
+  <div class="app-shell" id="app-container">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">1</div>
+        <div>
+          <h1>1on1基礎コーチング講座</h1>
+          <p>講座・練習・面談前整理・ふり返りをひとつにした実務アプリ</p>
+        </div>
+      </div>
+      <div class="status-strip">
+        <div class="pill">講座完了 <strong id="completedCount">0/10</strong></div>
+        <div class="pill">練習回数 <strong id="practiceCount">0回</strong></div>
+        <div class="pill">次の重点 <strong id="priorityChip">深掘り</strong></div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <h2>進め方</h2>
+        <p>まず講座で土台をつくり、次に部下役AIとの練習で試し、本番前後の支援で実務につなげます。</p>
+
+        <div class="nav-list">
+          <button class="nav-button active" data-tab="overview" onclick="window.__appDispatch('switchTab','overview')">ホーム<small>講座の全体像と始め方</small></button>
+          <button class="nav-button" data-tab="course" onclick="window.__appDispatch('switchTab','course')">10回講座<small>心理理解と返し方の基本</small></button>
+          <button class="nav-button" data-tab="practice" onclick="window.__appDispatch('switchTab','practice')">ケース練習<small>AI部下との実践対話</small></button>
+          <button class="nav-button" data-tab="examples" onclick="window.__appDispatch('switchTab','examples')">返し方見本<small>困った返答から学ぶ</small></button>
+          <button class="nav-button" data-tab="prep" onclick="window.__appDispatch('switchTab','prep')">面談前AIコーチ<small>今回の1on1の軸を整える</small></button>
+          <button class="nav-button" data-tab="review" onclick="window.__appDispatch('switchTab','review')">本番後ふり返り<small>次回につなぐ記録</small></button>
+          <button class="nav-button" data-tab="dashboard" onclick="window.__appDispatch('switchTab','dashboard')">ミニ管理画面<small>苦手傾向と進捗確認</small></button>
+        </div>
+
+        <div id="courseSidebar" class="course-list"></div>
+      </aside>
+
+      <main class="main-panel">
+        <section class="tab-section active" id="overviewSection">
+          <div class="panel-head">
+            <div>
+              <span class="badge">中小零細企業向け</span>
+              <h2>1on1を学び、<br>次の面談で使える形にする。</h2>
+              <p>講座で学び、AI部下との練習で試し、迷った返し方は見本で確認できます。</p>
+            </div>
+          </div>
+
+          <article class="section-card hero-banner">
+            <div>
+              <h3>学ぶ、試す、迷ったら見本を見る。</h3>
+              <p style="margin-top:14px;color:rgba(255,255,255,0.82);">1on1をやったことがない管理職でも、順番に進めれば「何を見て、どう返すか」が少しずつ身につく設計です。</p>
+            </div>
+            <div class="action-row">
+              <button class="secondary-button" id="jumpCoachButton" onclick="window.__appDispatch('switchTab','prep')">今日の面談方針を3分で固める</button>
+            </div>
+          </article>
+
+          <div class="feature-grid" style="margin-top:18px;">
+            <article class="feature-card">
+              <span class="feature-number">1</span>
+              <h3>1on1講座を始める</h3>
+              <p class="muted">まずは土台から学びます。初心者ほど、第1回から順に見るのが近道です。</p>
+              <button class="primary-button" id="startCourseButton" onclick="window.__appDispatch('switchTab','course')">講座で学ぶ</button>
+            </article>
+            <article class="feature-card">
+              <span class="feature-number">2</span>
+              <h3>AI部下で練習する</h3>
+              <p class="muted">実際に話しかけながら、返し方と見立てをその場で試します。</p>
+              <button class="primary-button" id="jumpPracticeButton" onclick="window.__appDispatch('switchTab','practice')">練習してみる</button>
+            </article>
+            <article class="feature-card">
+              <span class="feature-number">3</span>
+              <h3>返し方見本を見る</h3>
+              <p class="muted">部下の返答に困った時、どう返すかと何を見るかを学びます。</p>
+              <button class="primary-button" id="jumpExamplesButton" onclick="window.__appDispatch('switchTab','examples')">見本から学ぶ</button>
+            </article>
+          </div>
+
+          <div class="grid-2 compact-grid" style="margin-top:18px;">
+            <article class="section-card">
+              <h3>今日やること</h3>
+              <div class="timeline-list" id="homeNextActions"></div>
+            </article>
+            <article class="section-card">
+              <h3>今日の面談前メモ</h3>
+              <div id="homePrepMemo" class="note-block muted">まだ面談前メモはありません。</div>
+            </article>
+          </div>
+
+          <div id="trial-bar" class="trial-bar hidden"></div>
+
+          <div id="pay-section" class="pay-section hidden">
+            <h3>無料トライアル終了</h3>
+            <p>引き続き利用する場合は、法人契約の設定が必要です。</p>
+            <button class="primary-button" id="pay-btn" onclick="startCheckout()">利用継続の設定へ進む</button>
+          </div>
+          <div id="portal-wrap" class="hidden" style="margin-top:12px;">
+            <button class="portal-btn" onclick="openPortal()">契約内容・解約・請求を管理する</button>
+          </div>
+        </section>
+
+        <section class="tab-section" id="courseSection">
+          <div class="panel-head">
+            <div>
+              <span class="badge">10回の基礎コーチング講座</span>
+              <h2 id="courseTitle"></h2>
+              <p id="courseIntro"></p>
+            </div>
+            <div class="badge" id="courseStatusBadge">未完了</div>
+          </div>
+
+          <article class="section-card" style="margin-bottom:16px;">
+            <h3>講座一覧</h3>
+            <p class="muted">まずは第1回から順番に見るのがおすすめです。気になる回から開いても構いません。</p>
+            <div class="course-overview-grid" id="courseOverviewGrid">
+              <button class="course-overview-card" data-course-id="1" onclick="window.__appDispatch('openCourse',1)">
+                <strong>第1回</strong>
+                <span>安心して話してもらう入り方</span>
+              </button>
+              <button class="course-overview-card" data-course-id="2" onclick="window.__appDispatch('openCourse',2)">
+                <strong>第2回</strong>
+                <span>表面的な返答の奥を探る</span>
+              </button>
+              <button class="course-overview-card" data-course-id="3" onclick="window.__appDispatch('openCourse',3)">
+                <strong>第3回</strong>
+                <span>抽象的な悩みを具体化する</span>
+              </button>
+              <button class="course-overview-card" data-course-id="4" onclick="window.__appDispatch('openCourse',4)">
+                <strong>第4回</strong>
+                <span>感情に触れる</span>
+              </button>
+              <button class="course-overview-card" data-course-id="5" onclick="window.__appDispatch('openCourse',5)">
+                <strong>第5回</strong>
+                <span>解決を急がず整理する</span>
+              </button>
+              <button class="course-overview-card" data-course-id="6" onclick="window.__appDispatch('openCourse',6)">
+                <strong>第6回</strong>
+                <span>支援できることを一緒に探す</span>
+              </button>
+              <button class="course-overview-card" data-course-id="7" onclick="window.__appDispatch('openCourse',7)">
+                <strong>第7回</strong>
+                <span>若手の成長停滞に向き合う</span>
+              </button>
+              <button class="course-overview-card" data-course-id="8" onclick="window.__appDispatch('openCourse',8)">
+                <strong>第8回</strong>
+                <span>不満や反発のある相手に向き合う</span>
+              </button>
+              <button class="course-overview-card" data-course-id="9" onclick="window.__appDispatch('openCourse',9)">
+                <strong>第9回</strong>
+                <span>離職予兆や諦めのサインを捉える</span>
+              </button>
+              <button class="course-overview-card" data-course-id="10" onclick="window.__appDispatch('openCourse',10)">
+                <strong>第10回</strong>
+                <span>次回につながる終わり方を作る</span>
+              </button>
+            </div>
+          </article>
+
+          <div class="grid-2">
+            <article class="section-card">
+              <h3>今回の狙い</h3>
+              <div class="detail-list" id="courseGoals"></div>
+            </article>
+            <article class="section-card">
+              <h3>見るべきポイント</h3>
+              <div class="signal-list" id="courseSignals"></div>
+            </article>
+          </div>
+
+          <div class="grid-2" style="margin-top:16px;">
+            <article class="section-card employee-box">
+              <div class="message-label">部下の発言例</div>
+              <p id="courseEmployeeLine"></p>
+            </article>
+            <article class="section-card coach-box">
+              <div class="message-label">コーチの着眼点</div>
+              <p id="courseCoachLine"></p>
+            </article>
+          </div>
+
+          <article class="section-card" style="margin-top:16px;">
+            <h3>返答の方向性を選ぶ</h3>
+            <p class="muted">模範解答を暗記するのでなく、どの意図で返すかを理解する練習です。</p>
+            <div class="option-grid" id="courseOptions"></div>
+            <div class="analysis-card hidden" id="courseFeedbackBox" style="margin-top:16px;"></div>
+            <div class="action-row" style="margin-top:16px;">
+              <button class="primary-button" id="markCompleteButton" onclick="window.__appDispatch('markCourseComplete')">この回を完了にする</button>
+              <button class="ghost-button" id="nextCourseButton" onclick="window.__appDispatch('nextCourse')">次の回へ</button>
+              <button class="ghost-button" id="courseToCoachButton" onclick="window.__appDispatch('courseToCoach')">この学びを今日の面談前に整える</button>
+            </div>
+          </article>
+        </section>
+
+        <section class="tab-section" id="practiceSection">
+          <div class="panel-head">
+            <div>
+              <span class="badge">ケース練習</span>
+              <h2>AIの部下役と対話しながら、<br>聞き方と返し方を練習する。</h2>
+              <p>シナリオを選び、実際に話しかけてください。セッション終了後にAIが1on1コーチとしてフィードバックを返します。</p>
+            </div>
+          </div>
+
+          <div class="practice-shell">
+            <article class="section-card">
+              <h3>シナリオ選択</h3>
+              <div class="field" style="margin-top:12px;">
+                <label for="scenarioSelect">練習するテーマ</label>
+                <select id="scenarioSelect" onchange="window.__handleScenarioChange && window.__handleScenarioChange(this.value)">
+                  <option value="burnout">燃え尽き・モチベーション低下</option>
+                  <option value="conflict">チーム内人間関係の悩み</option>
+                  <option value="career">キャリアの方向性・成長の悩み</option>
+                  <option value="performance">業務パフォーマンスの課題</option>
+                  <option value="worklife">仕事と私生活のバランス</option>
+                </select>
+              </div>
+              <div class="message-box employee-box" style="margin-top:12px;">
+                <div class="message-label">部下プロフィール</div>
+                <p id="scenarioPersona">田中さん（28歳）</p>
+              </div>
+              <div class="message-box" style="margin-top:12px;">
+                <div class="message-label">練習のポイント</div>
+                <p id="scenarioContext">残業が続き、以前より反応が薄くなっている部下です。最初は「問題ない」と言いがちです。</p>
+              </div>
+              <div class="tag-row" id="scenarioTags" style="margin-top:12px;">
+                <span class="tag">疲弊</span>
+                <span class="tag">モチベーション低下</span>
+                <span class="tag">残業</span>
+              </div>
+              <div class="message-box coach-box" style="margin-top:12px;">
+                <div class="message-label">このケースで意識したいこと</div>
+                <p id="scenarioTip">解決策を急がず、まず安心感と温度感の確認を優先してください。</p>
+              </div>
+              <div class="action-row" style="margin-top:16px;">
+                <button class="primary-button" id="startPracticeButton" onclick="window.__appDispatch('startPractice')">このシナリオで始める</button>
+              </div>
+            </article>
+
+            <article class="section-card chat-box">
+              <div class="chat-header">
+                <div class="chat-header-left">
+                  <div class="persona-avatar" id="personaAvatar">🙂</div>
+                  <div>
+                    <div style="font-weight:800;" id="personaName">シナリオを選択してください</div>
+                    <div class="muted" id="personaRole">まだセッションは始まっていません</div>
+                  </div>
+                </div>
+                <div class="header-actions">
+                  <div class="turn-counter" id="turnCounter">0 ターン</div>
+                  <button class="ghost-button" id="endSessionButton" onclick="window.__appDispatch('endSession')">セッション終了</button>
+                </div>
+              </div>
+
+              <div class="chat-log" id="chatMessages">
+                <div class="system-msg">左のシナリオを選び、「このシナリオで始める」を押すと練習を開始できます。</div>
+              </div>
+
+              <div class="chat-input-wrap">
+                <div class="input-row">
+                  <textarea id="userInput" class="chat-textarea" placeholder="部下に話しかけてみてください..." rows="1"></textarea>
+                  <button class="send-btn" id="sendBtn" onclick="window.__appDispatch('sendMessage')">↑</button>
+                </div>
+                <div class="practice-toolbar" style="margin-top:10px;">
+                  <button class="ghost-button" id="insertStarterButton" onclick="window.__appDispatch('insertStarter')">最初の一言の例を入れる</button>
+                  <small>Enterで送信 / Shift+Enterで改行</small>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="analysis-card hidden" id="feedbackPanel" style="margin-top:18px;">
+            <h3>AIコーチからのフィードバック</h3>
+            <div class="feedback-loading hidden" id="feedbackLoading">
+              <div class="spinner"></div>
+              <p>AIがフィードバックを生成中です...</p>
+            </div>
+            <div class="feedback-content hidden" id="feedbackContent"></div>
+            <div class="action-row hidden" id="feedbackActions" style="margin-top:16px;">
+              <button class="primary-button" id="replayScenarioButton" onclick="window.__appDispatch('replayScenario')">同じシナリオで再挑戦</button>
+              <button class="ghost-button" id="practiceToCoachButton" onclick="window.__appDispatch('practiceToCoach')">このテーマを今日の面談に引き寄せて整理する</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="tab-section" id="examplesSection">
+          <div class="panel-head">
+            <div>
+              <span class="badge">返し方見本</span>
+              <h2>部下の返答に、<br>どう返せばよいか学ぶ。</h2>
+              <p>困りやすい返答を入れると、返し方の見本だけでなく、どこに注目すべきかも確認できます。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="section-card">
+              <div class="field">
+                <label for="exampleInput">部下にこう言われた</label>
+                <textarea id="exampleInput" placeholder="例: 大丈夫です。特に問題ありません。少し疲れてはいますが…"></textarea>
+                <small>実際に言われた言葉を、そのまま短く入れてください。</small>
+              </div>
+              <div class="starter-grid" style="margin-top:16px;">
+                <button class="starter-button example-quick-button" data-example="大丈夫です。問題ありません。">大丈夫です。問題ありません。</button>
+                <button class="starter-button example-quick-button" data-example="最近ちょっとしんどいです。">最近ちょっとしんどいです。</button>
+                <button class="starter-button example-quick-button" data-example="忙しいだけです。">忙しいだけです。</button>
+                <button class="starter-button example-quick-button" data-example="自分には向いてないかもしれません。">自分には向いてないかもしれません。</button>
+                <button class="starter-button example-quick-button" data-example="言っても変わらないと思っていました。">言っても変わらないと思っていました。</button>
+                <button class="starter-button example-quick-button" data-example="少し疲れはありますが、大丈夫です。">少し疲れはありますが、大丈夫です。</button>
+              </div>
+              <div class="action-row" style="margin-top:16px;">
+                <button class="primary-button" id="generateExampleButton" onclick="window.__appDispatch('generateExample')">見本を出す</button>
+              </div>
+            </article>
+
+            <article class="section-card">
+              <h3>返し方の見本</h3>
+              <div class="detail-list" id="exampleOutput">
+                <div class="detail-item"><div class="bullet">1</div><div>部下の返答を入れると、ここに返し方の見本と見るべきポイントが表示されます。</div></div>
+              </div>
+              <div class="note-block muted" id="exampleLearningNote" style="margin-top:16px;">返し方だけでなく、どこを拾ってその一問につなげるかを見るのが学習のポイントです。</div>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-section" id="prepSection">
+          <div class="panel-head">
+            <div>
+              <span class="badge">面談前AIコーチ</span>
+              <h2>今回の1on1で何を目指し、<br>何を見極めるかを整える。</h2>
+              <p>答えを教わる前に、自分の軸を言葉にするための画面です。今回の着地点、先に見たいこと、入り方、急がないことを短く固めます。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="section-card">
+              <div class="coach-stage">
+                <div class="coach-stage-label" id="coachPhaseLabel">今回の1on1前に、着地点と入り方を短く整えます。</div>
+              </div>
+              <div class="starter-grid" id="coachStarterGrid">
+                <button class="starter-button" data-starter="今回いちばん確かめたいことを整理したい" onclick="window.__appDispatch('coachStarter','今回いちばん確かめたいことを整理したい')">今回いちばん確かめたいことを整理したい</button>
+                <button class="starter-button" data-starter="どこまで踏み込むかの軸を整理したい" onclick="window.__appDispatch('coachStarter','どこまで踏み込むかの軸を整理したい')">どこまで踏み込むか決めたい</button>
+                <button class="starter-button" data-starter="今回の面談で何を目指すか整理したい" onclick="window.__appDispatch('coachStarter','今回の面談で何を目指すか整理したい')">今回の面談のゴールを決めたい</button>
+                <button class="starter-button" data-starter="今回は急がないことを決めたい" onclick="window.__appDispatch('coachStarter','今回は急がないことを決めたい')">今回は急がないことを決めたい</button>
+              </div>
+              <div class="coach-chat-card" id="coachChatBox">
+                <div class="coach-chat-row coach-chat-system">
+                  <div class="coach-bubble">まずはスターターを選ぶか、下の入力欄から今回の1on1前に整理したいことを書いてください。最後に右側へ、今日そのまま使える4点メモを残します。</div>
+                </div>
+              </div>
+              <div class="field" style="margin-top:16px;">
+                <label for="coachInput">今回の1on1前に整理したいこと</label>
+                <textarea id="coachInput" placeholder="例: 退職を考えていそうな部下との1on1で、どこまで踏み込むのが適切か整理したい"></textarea>
+                <small>短くて大丈夫です。今いちばん気になっていることから書いてください。</small>
+              </div>
+              <div class="action-row" style="margin-top:16px;">
+                <button class="primary-button" id="sendCoachButton" onclick="window.__appDispatch('coachMemo')">4点メモをつくる</button>
+                <button class="secondary-button" id="resetCoachButton" onclick="window.__appDispatch('resetCoach')">この整理をやり直す</button>
+              </div>
+            </article>
+
+            <article class="section-card">
+              <h3>今回の面談メモ</h3>
+              <div class="prep-list" id="prepOutput">
+                <div class="prep-item">
+                  <div class="bullet">1</div>
+                  <div>ここに、面談前AIコーチで整理した4点メモが表示されます。面談直前はこの欄だけ見返せば十分です。</div>
+                </div>
+              </div>
+              <div class="action-row" style="margin-top:16px;">
+                <button class="ghost-button" id="coachToReviewButton" onclick="window.__appDispatch('coachToReview')">面談後にふり返りを残す</button>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-section" id="reviewSection">
+          <div class="panel-head">
+            <div>
+              <span class="badge">本番後ふり返り</span>
+              <h2>面談が終わったあとに、<br>次回につながるメモを残す。</h2>
+              <p>うまくいったかどうかだけで終わらせず、相手の気になった言葉と、自分の改善点を残します。</p>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <article class="section-card">
+              <div class="field">
+                <label for="reviewSignal">相手の気になった言葉</label>
+                <textarea id="reviewSignal" placeholder="例: 『忙しいだけです』と言っていたが、言い切る前に少し間があった。"></textarea>
+              </div>
+              <div class="field" style="margin-top:12px;">
+                <label for="reviewReflection">自分のふり返り</label>
+                <textarea id="reviewReflection" placeholder="例: 解決策を早く出そうとしてしまい、感情を受け止める時間が短かった。"></textarea>
+              </div>
+              <div class="field" style="margin-top:12px;">
+                <label for="reviewNextAction">次回の宿題</label>
+                <textarea id="reviewNextAction" placeholder="例: 次回は『最近いちばんしんどい場面』を具体的に聞く。"></textarea>
+              </div>
+              <div class="action-row" style="margin-top:16px;">
+                <button class="primary-button" id="saveReviewButton" onclick="window.__appDispatch('saveReview')">ふり返りを保存する</button>
+              </div>
+            </article>
+
+            <article class="section-card">
+              <h3>直近のふり返り</h3>
+              <div id="reviewHistory"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="tab-section" id="dashboardSection">
+          <div class="panel-head">
+            <div>
+              <span class="badge">ミニ管理画面</span>
+              <h2>少人数の会社でも見やすい、<br>最低限の進捗と苦手傾向。</h2>
+              <p>高度な分析より、次に何を重点にすべきかがすぐ見えることを重視しています。</p>
+            </div>
+          </div>
+
+          <div class="grid-4">
+            <article class="mini-card"><span class="stat-value" id="dashboardCompleted">0/10</span><h3>講座完了数</h3><p class="muted">段階学習の進み具合</p></article>
+            <article class="mini-card"><span class="stat-value" id="dashboardPractice">0</span><h3>練習回数</h3><p class="muted">ケース練習の累計</p></article>
+            <article class="mini-card"><span class="stat-value" id="dashboardWeakness">深掘り</span><h3>いまの重点</h3><p class="muted">次回の優先テーマ</p></article>
+            <article class="mini-card"><span class="stat-value" id="dashboardReviews">0</span><h3>ふり返り保存数</h3><p class="muted">本番後メモの蓄積</p></article>
+          </div>
+
+          <div class="grid-2" style="margin-top:16px;">
+            <article class="section-card">
+              <h3>苦手傾向</h3>
+              <div class="score-grid" id="dashboardScores"></div>
+            </article>
+            <article class="section-card">
+              <h3>次におすすめのアクション</h3>
+              <div class="timeline-list" id="dashboardActions"></div>
+            </article>
+          </div>
+
+          <div class="footer-note">この版ではブラウザ保存を使っています。将来は管理者別、チーム別、受講者別に拡張できます。</div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+    <script>
+      window.__fallbackSwitchTab = function (payload) {
+        const map = {
+          overview: 'overviewSection',
+          course: 'courseSection',
+          practice: 'practiceSection',
+          examples: 'examplesSection',
+          prep: 'prepSection',
+          review: 'reviewSection',
+          dashboard: 'dashboardSection'
+        };
+        document.querySelectorAll('.nav-button').forEach((button) => {
+          button.classList.toggle('active', button.dataset.tab === payload);
+        });
+        Object.entries(map).forEach(([key, id]) => {
+          const section = document.getElementById(id);
+          if (section) section.classList.toggle('active', key === payload);
+        });
+      };
+
+      window.__fallbackOpenCourse = function (courseId) {
+        const sessions = window.__COURSE_SESSIONS__ || [];
+        const numericId = Number(courseId) || 1;
+        const session = sessions.find((item) => item.id === numericId) || sessions[0];
+        if (!session) return;
+
+        window.__fallbackSwitchTab('course');
+        const title = document.getElementById('courseTitle');
+        const intro = document.getElementById('courseIntro');
+        const employee = document.getElementById('courseEmployeeLine');
+        const coach = document.getElementById('courseCoachLine');
+        const goals = document.getElementById('courseGoals');
+        const signals = document.getElementById('courseSignals');
+        const options = document.getElementById('courseOptions');
+
+        document.querySelectorAll('#courseOverviewGrid .course-overview-card').forEach((button) => {
+          button.classList.toggle('active', Number(button.dataset.courseId) === session.id);
+        });
+
+        if (title) title.textContent = session.id + '. ' + session.title;
+        if (intro) intro.textContent = session.intro;
+        if (employee) employee.textContent = session.employee;
+        if (coach) coach.textContent = session.coach;
+        if (goals) {
+          goals.innerHTML = session.goals.map((goal, index) =>
+            '<div class="detail-item"><div class="bullet">' + (index + 1) + '</div><div>' + goal + '</div></div>'
+          ).join('');
+        }
+        if (signals) {
+          signals.innerHTML = session.signals.map((signal, index) =>
+            '<div class="detail-item"><div class="bullet">' + (index + 1) + '</div><div>' + signal + '</div></div>'
+          ).join('');
+        }
+        if (options) {
+          options.innerHTML = session.options.map((option) =>
+            '<button class="option-button"><strong>' + option.label + '</strong><div style="margin-top:8px;">' + option.body + '</div></button>'
+          ).join('');
+        }
+      };
+
+      window.__fallbackScenarioMeta = {
+        burnout: {
+          avatar: '😔',
+          persona: '田中さん（28歳）',
+          name: '燃え尽き・モチベーション低下',
+          opening: 'あ、部長、お時間いただいてありがとうございます。えっと...特に何も問題はないんですが、1on1ということで...',
+          context: '残業が続き、以前より反応が薄くなっている部下です。最初は「問題ない」と言いがちです。',
+          tags: ['疲弊', 'モチベーション低下', '残業'],
+          tip: '解決策を急がず、まず安心感と温度感の確認を優先してください。'
+        },
+        conflict: {
+          avatar: '😟',
+          persona: '佐藤さん（32歳）',
+          name: 'チーム内人間関係の悩み',
+          opening: 'はい、呼んでいただいてありがとうございます。えーと...何でしょうか？',
+          context: '同僚との関係が悪化し、仕事のしづらさとストレスが高まっています。',
+          tags: ['人間関係', 'チーム', '言いづらさ'],
+          tip: '誰が悪いかを決めるより先に、どんな場面で何が起きているかを整理してください。'
+        },
+        career: {
+          avatar: '🤔',
+          persona: '鈴木さん（25歳）',
+          name: 'キャリアの方向性・成長の悩み',
+          opening: 'あ、はい。お時間ありがとうございます。実は、少し相談したいことがあって...',
+          context: '入社3年目前後で、このまま今の部署にいてよいのか迷い始めています。',
+          tags: ['キャリア', '将来不安', '転職予兆'],
+          tip: '否定や引き留めに急がず、どの場面で迷いが強くなるかを聞いてください。'
+        },
+        performance: {
+          avatar: '😰',
+          persona: '高橋さん（35歳）',
+          name: '業務パフォーマンスの課題',
+          opening: '失礼します。呼んでいただきましたが...何かありましたでしょうか？',
+          context: '最近のミス増加で自信を失い、プライドもあり弱みを出しづらい状態です。',
+          tags: ['ミス増加', '自信低下', 'プレッシャー'],
+          tip: '責めるより、何が難しくなっているのかを一緒に言語化する姿勢が有効です。'
+        },
+        worklife: {
+          avatar: '😓',
+          persona: '中村さん（30歳）',
+          name: '仕事と私生活のバランス',
+          opening: 'お時間いただいてありがとうございます。最近はまあ、なんとかやっています。',
+          context: '仕事と家庭の両立に限界を感じつつも、迷惑をかけたくない思いが強い部下です。',
+          tags: ['育児', '両立', '限界'],
+          tip: '「大変ですがなんとか」は要注意です。罪悪感を受け止めてから具体的な配慮へ進んでください。'
+        }
+      };
+
+      window.__fallbackRenderScenario = function (scenarioId) {
+        const meta = window.__fallbackScenarioMeta[scenarioId] || window.__fallbackScenarioMeta.burnout;
+        const persona = document.getElementById('scenarioPersona');
+        const context = document.getElementById('scenarioContext');
+        const tags = document.getElementById('scenarioTags');
+        const tip = document.getElementById('scenarioTip');
+        if (persona) persona.textContent = meta.persona;
+        if (context) context.textContent = meta.context;
+        if (tags) {
+          tags.innerHTML = (meta.tags || []).map((tag) => '<span class=\"tag\">' + tag + '</span>').join('');
+        }
+        if (tip) tip.textContent = meta.tip;
+      };
+
+      window.__handleScenarioChange = function (scenarioId) {
+        try {
+          if (window.__APP_ACTIONS__ && typeof window.__APP_ACTIONS__.switchTab === 'function' && typeof window.__APP_READY__ !== 'undefined') {
+            if (window.__APP_ACTIONS__ && typeof window.__APP_ACTIONS__.startPractice === 'function') {
+              // no-op, only use as signal that main-preview.js loaded
+            }
+          }
+          if (typeof window.renderScenario === 'function') {
+            return window.renderScenario();
+          }
+        } catch {}
+        return window.__fallbackRenderScenario(scenarioId);
+      };
+
+      window.__fallbackStartPractice = function () {
+        const select = document.getElementById('scenarioSelect');
+        const scenarioId = (select && select.value) || 'burnout';
+        const meta = window.__fallbackScenarioMeta[scenarioId] || window.__fallbackScenarioMeta.burnout;
+        const personaAvatar = document.getElementById('personaAvatar');
+        const personaName = document.getElementById('personaName');
+        const personaRole = document.getElementById('personaRole');
+        const chatMessages = document.getElementById('chatMessages');
+        window.__fallbackSwitchTab('practice');
+        if (personaAvatar) personaAvatar.textContent = meta.avatar;
+        if (personaName) personaName.textContent = meta.persona;
+        if (personaRole) personaRole.textContent = meta.name;
+        if (chatMessages) {
+          chatMessages.innerHTML =
+            '<div class="system-msg">1on1が始まりました。最初の一言で安心感を作ることを意識してください。</div>' +
+            '<div class="chat-message assistant"><div class="msg-avatar">' + meta.avatar + '</div><div class="msg-bubble">' + meta.opening + '</div></div>';
+        }
+      };
+
+      window.__fallbackInsertStarter = function () {
+        const select = document.getElementById('scenarioSelect');
+        const input = document.getElementById('userInput');
+        const button = document.getElementById('insertStarterButton');
+        const scenarioId = (select && select.value) || 'burnout';
+        const starters = {
+          burnout: 'ありがとう。無理に何か出さなくても大丈夫だから、今日は最近の様子を少し聞かせてもらえる？',
+          conflict: '話しづらいことなら無理にまとめなくて大丈夫です。最近やりづらさを感じる場面があれば、話せる範囲で教えてください。',
+          career: '将来のことを考えているんだね。まだ整理しきれてなくても大丈夫だから、どんな時にその気持ちが強くなるのか聞かせてもらえる？',
+          performance: '最近しんどさややりづらさがあるようにも見えていて、少し気になっていました。どんな場面が一番つらいか聞かせてもらえる？',
+          worklife: 'なんとかやっていると言いながら、かなり頑張っている感じも伝わってきます。いま一番負担が大きいのはどのあたりですか？'
+        };
+        if (!input) return;
+        input.value = starters[scenarioId] || starters.burnout;
+        input.focus();
+        if (button) {
+          button.textContent = '入力しました';
+          window.setTimeout(() => {
+            button.textContent = '最初の一言の例を入れる';
+          }, 1200);
+        }
+      };
+
+      window.__fallbackMarkCourseComplete = function () {
+        const title = document.getElementById('courseTitle');
+        const badge = document.getElementById('courseStatusBadge');
+        const button = document.getElementById('markCompleteButton');
+        const completedCount = document.getElementById('completedCount');
+        const match = title && title.textContent && title.textContent.match(/^(\d+)\./);
+        const courseId = match ? Number(match[1]) : 1;
+        const storageKey = 'oneOnOneCoachingAppStateV2';
+        let state = null;
+        try {
+          state = JSON.parse(localStorage.getItem(storageKey) || '{}');
+        } catch {}
+        if (!state || typeof state !== 'object') state = {};
+        if (!Array.isArray(state.completedCourses)) state.completedCourses = [];
+        if (!state.completedCourses.includes(courseId)) {
+          state.completedCourses.push(courseId);
+        }
+        state.currentCourseId = courseId;
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(state));
+        } catch {}
+        document.querySelectorAll('#courseOverviewGrid .course-overview-card').forEach((card) => {
+          if (Number(card.dataset.courseId) === courseId) {
+            card.classList.add('done');
+          }
+        });
+        if (badge) badge.textContent = '完了済み';
+        if (button) {
+          button.textContent = '完了にしました';
+          window.setTimeout(() => {
+            button.textContent = 'この回は完了済みです';
+          }, 1200);
+        }
+        if (completedCount) {
+          const count = state.completedCourses.length;
+          completedCount.innerHTML = '<strong>' + count + '/10</strong>';
+        }
+      };
+
+      window.__fallbackNextCourse = function () {
+        const title = document.getElementById('courseTitle');
+        const match = title && title.textContent && title.textContent.match(/^(\d+)\./);
+        const currentId = match ? Number(match[1]) : 1;
+        const nextId = Math.min(currentId + 1, 10);
+        return window.__fallbackOpenCourse(nextId);
+      };
+
+      window.__fallbackCoachMemo = function () {
+        const input = document.getElementById('coachInput');
+        const chat = document.getElementById('coachChatBox');
+        const prep = document.getElementById('prepOutput');
+        const phase = document.getElementById('coachPhaseLabel');
+        const raw = ((input && input.value) || '').trim();
+        if (!raw) return;
+        const purpose = raw.includes('急がない')
+          ? '今回は結論を急がず、相手が話しやすい余白を残したい'
+          : raw.includes('ゴール')
+            ? '今回の1on1で何を持ち帰れれば十分かを先に決めたい'
+            : raw.includes('踏み込')
+              ? 'どこまで聞くかの線を先に整えたい'
+              : '今回いちばん確認したい一点を先に絞りたい';
+        const focus = raw.includes('急がない')
+          ? '今すぐ答えを出さなくてよい論点'
+          : raw.includes('ゴール')
+            ? '今回持ち帰れれば十分な着地点'
+            : raw.includes('踏み込')
+              ? '踏み込みすぎないための確認ポイント'
+              : '今回いちばん先に確認したい一点';
+        const opening = raw.includes('急がない')
+          ? '今日は結論を急がずに、今どうなっているかを一緒に整理できたらと思っています。'
+          : raw.includes('踏み込')
+            ? '最近の様子を見ていて少し気になっています。今日は無理のない範囲で今の状況を聞かせてもらえたらうれしいです。'
+            : '今日は、いま気になっていることから順番に聞かせてもらえたらと思っています。';
+        const holdBack = raw.includes('急がない')
+          ? '助言や評価を急がない'
+          : raw.includes('踏み込')
+            ? '結論や引き止めを急がず、まず背景確認を優先する'
+            : '論点を増やしすぎない';
+        if (phase) {
+          phase.textContent = '4点メモができました。口に出すのは「最初の一言例」だけで十分です。';
+        }
+        if (chat) {
+          chat.innerHTML =
+            '<div class="coach-chat-row coach-chat-user"><div class="coach-bubble">' + raw + '</div></div>' +
+            '<div class="coach-chat-row coach-chat-ai"><div class="coach-bubble">今回の1on1では「' + purpose + '」が見えれば十分そうです。右側の4点メモを面談直前に見返してください。</div></div>';
+        }
+        if (prep) {
+          prep.innerHTML =
+            '<div class="prep-item"><div class="bullet">1</div><div><strong>今回の着地点</strong><div>' + purpose + '</div></div></div>' +
+            '<div class="prep-item"><div class="bullet">2</div><div><strong>先に見たいこと</strong><div>' + focus + '</div></div></div>' +
+            '<div class="prep-item"><div class="bullet">3</div><div><strong>最初の一言例</strong><div>' + opening + '</div></div></div>' +
+            '<div class="prep-item"><div class="bullet">4</div><div><strong>今日は急がないこと</strong><div>' + holdBack + '</div></div></div>';
+        }
+      };
+
+      window.__fallbackSaveReview = function () {
+        const signal = document.getElementById('reviewSignal');
+        const reflection = document.getElementById('reviewReflection');
+        const nextAction = document.getElementById('reviewNextAction');
+        const history = document.getElementById('reviewHistory');
+        const countEl = document.getElementById('dashboardReviews');
+        const button = document.getElementById('saveReviewButton');
+        const signalText = ((signal && signal.value) || '').trim();
+        const reflectionText = ((reflection && reflection.value) || '').trim();
+        const nextActionText = ((nextAction && nextAction.value) || '').trim();
+        if (!signalText && !reflectionText && !nextActionText) return;
+        const storageKey = 'oneOnOneReviewFallbackV1';
+        let items = [];
+        try {
+          items = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        } catch {}
+        items.unshift({
+          createdAt: new Date().toLocaleString('ja-JP'),
+          signal: signalText,
+          reflection: reflectionText,
+          nextAction: nextActionText
+        });
+        items = items.slice(0, 8);
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(items));
+        } catch {}
+        if (signal) signal.value = '';
+        if (reflection) reflection.value = '';
+        if (nextAction) nextAction.value = '';
+        if (history) {
+          history.innerHTML = items.map((item) =>
+            '<div class="note-block" style="margin-top:12px;">' +
+            '<strong>' + item.createdAt + '</strong>' +
+            '<div style="margin-top:10px;"><strong>気になった言葉</strong><div>' + (item.signal || '未入力') + '</div></div>' +
+            '<div style="margin-top:10px;"><strong>自分のふり返り</strong><div>' + (item.reflection || '未入力') + '</div></div>' +
+            '<div style="margin-top:10px;"><strong>次回の宿題</strong><div>' + (item.nextAction || '未入力') + '</div></div>' +
+            '</div>'
+          ).join('');
+        }
+        if (countEl) countEl.textContent = String(items.length);
+        if (button) {
+          button.textContent = '保存しました';
+          window.setTimeout(() => {
+            button.textContent = 'ふり返りを保存する';
+          }, 1200);
+        }
+      };
+
+      window.__fallbackLocalScenarioReply = function (scenarioId, text, userTurnCount, lastAssistantText, messageList) {
+        if (window.__generatePracticeReply && Array.isArray(messageList)) {
+          try {
+            return window.__generatePracticeReply(scenarioId, text, messageList);
+          } catch {}
+        }
+        const choose = function (candidates) {
+          return candidates.find((candidate) => candidate !== lastAssistantText) || candidates[candidates.length - 1];
+        };
+        const hasAny = function (keywords) {
+          return keywords.some(function (keyword) { return text.includes(keyword); });
+        };
+        const isDirective = hasAny(['しましょう', 'してみましょう', 'すべき', 'した方が', '休みに', '休んだ', '検討してみましょう', '変えましょう', '減らしましょう']);
+        if (hasAny(['夕飯', 'ご飯', 'ランチ', '天気', '週末', '映画', '趣味'])) {
+          return 'その話もできますが、いまは仕事のしづらさの話を少し整理できると助かります。最近いちばん引っかかる場面から話してもいいですか。';
+        }
+        if (scenarioId === 'burnout') {
+          if (isDirective) {
+            return 'そうしてもらえたら助かる気持ちはあります。ただ、いきなり大きく変えるより、まず何が一番しんどいのか整理できると話しやすいです。';
+          }
+          if (hasAny(['最近', '様子'])) return '繁忙の時期が続いていて、家に帰る頃にはかなり疲れています。大丈夫と言えば大丈夫なんですが、前より余裕は減っています。';
+          if (hasAny(['どんな', 'どこ', '一番きつい', '場面', '一番'])) return '夕方以降に急ぎの依頼が重なる時が一番きついです。自分だけ遅れている感じもして、少し焦ります。';
+          if (hasAny(['気持ち', '不安', '焦り'])) {
+            return '正直、今のまま続くとしんどいなとは思っています。ただ、弱音だと思われるのも少し気になります。';
+          }
+          if (hasAny(['どうな', '楽', '助か', '理想'])) {
+            return '急ぎの依頼が重なる時に、少し相談しやすかったり優先順位を一緒に見てもらえたりすると、かなり違うと思います。';
+          }
+          return userTurnCount > 1
+            ? choose([
+              '表向きは回せているんですが、前より回復しにくくなっている感じがあります。',
+              '気力で回している部分が増えていて、このままだと少し危ない感じはあります。',
+              '大丈夫と言い切るには少し無理が出てきている感じはあります。'
+            ])
+            : 'そうですね……自分でもまだ整理しきれていないんですが、疲れが抜けにくくなっている感じはあります。';
+        }
+        if (scenarioId === 'conflict') {
+          if (isDirective) {
+            return 'そこまで一気に決めるというより、まず何が起きているのかを落ち着いて整理できるとありがたいです。';
+          }
+          if (hasAny(['どんな', '場面', '会議', '打ち合わせ'])) return '打ち合わせで意見を出しても、すぐ否定されることが続いていて、その後は話しづらくなっています。';
+          if (hasAny(['気持ち', 'しんど', '辛', 'つら', 'どう感じ'])) {
+            return '露骨な言い合いではないんですが、話す前から構えてしまって、仕事そのものより関わることに疲れてきています。';
+          }
+          if (hasAny(['どうな', '楽', '理想', '助か'])) {
+            return '少なくとも、最初から否定される感じがなくて、一度受け止めてもらえるだけでもかなり話しやすくなると思います。';
+          }
+          if (hasAny(['誰', '相手', 'その人'])) {
+            return '特定の一人だけというより、その場にいる時の空気全体に身構える感じが強いです。';
+          }
+          return userTurnCount > 1
+            ? choose([
+              '露骨な言い合いではないんですが、話す前から構えてしまうことが増えています。',
+              '必要以上に身構えてしまって、会議の前から少し消耗する感じがあります。',
+              '大きな衝突ではなくても、毎回少しずつ削られている感じがあります。'
+            ])
+            : '大きな衝突があったわけではないんですが、最近は少しやりづらさを感じています。';
+        }
+        if (scenarioId === 'career') {
+          if (isDirective) {
+            return '方向をすぐ決めたいというより、いま何に迷っているのかをもう少し整理したい気持ちの方が近いです。';
+          }
+          if (hasAny(['どんな', '時', '場面'])) return '同じ作業が続く時に、このままでいいのかなと考えることが増えました。';
+          if (hasAny(['何を', '将来', '成長'])) {
+            return 'もっと成長している実感がほしいんだと思います。ただ、何を変えたいかはまだはっきりしていません。';
+          }
+          if (hasAny(['転職', '辞め'])) {
+            return 'すぐに辞めたいと決めているわけではないです。ただ、このままでいいのか考えることは増えています。';
+          }
+          if (hasAny(['どうな', '理想', '楽', '助か'])) {
+            return '少しでも成長している実感が持てたり、今後の見通しが見えると、迷いはかなり減ると思います。';
+          }
+          return userTurnCount > 1
+            ? choose([
+              '今すぐ答えがあるわけではないんですが、この先のイメージが持ちにくくなっています。',
+              '何を変えたいのかはまだ曖昧なんですが、このままでいいのか考えることは増えています。',
+              'はっきりした不満というより、先が見えにくいことが気になっています。'
+            ])
+            : '転職したいと決めているわけではないんですが、今の働き方のままでいいのか迷っています。';
+        }
+        if (scenarioId === 'performance') {
+          if (isDirective) {
+            return 'そうした方がいいのかもしれませんが、正直いまは「できていない」と言われた感じになって少し身構えてしまいます。';
+          }
+          if (hasAny(['どんな', '場面', 'ミス', '確認'])) return '確認が甘くなって同じミスをしてしまう時があって、そのたびに自信が下がります。';
+          if (hasAny(['気持ち', '不安', '自信', '怖い'])) {
+            return 'また失敗するかもしれないと思うと、前より手が止まりやすくなっています。';
+          }
+          if (hasAny(['助け', '相談', '頼'])) {
+            return '本当は早めに相談した方がいいとわかっているんですが、自分で何とかしないとと思ってしまいます。';
+          }
+          if (hasAny(['どうな', '楽', '助か', '理想'])) {
+            return '一人で抱え込まずに途中で確認できたり、優先順位を整理できたりすると、かなり進めやすくなると思います。';
+          }
+          return userTurnCount > 1
+            ? choose([
+              '集中しきれないまま進めてしまって、結果的にミスにつながることがあります。',
+              'また失敗するかもしれないと思って、前より手が止まりやすくなっています。',
+              '空回りしている感覚があって、確認するほど不安になる時があります。'
+            ])
+            : '最近は少し空回りしている感じがあって、前よりうまく進められていない気がします。';
+        }
+        if (isDirective) {
+          return choose([
+            'そうできたら助かる気持ちはあります。ただ、そこまで大きく決める前に、今どこが一番きついのかを整理したい感じです。',
+            '休めたら楽にはなると思うんですが、まずは今の負担がどこに偏っているのかを一緒に見てもらえると助かります。',
+            'すぐに結論を決めるより、何が崩れやすいのかを整理できると少し話しやすいです。'
+          ]);
+        }
+        if (hasAny(['私生活', 'どちら', '業務の方', '仕事の方'])) {
+          return 'どちらもありますが、きっかけは朝の家庭側で、その影響が仕事にそのまま残る感じです。';
+        }
+        if (hasAny(['送り迎え', '朝', '保育園', '家族', '子ども'])) {
+          return choose([
+            '朝は子どもの支度と送り迎えがあって、少し予定がずれるだけでその後が全部押してしまいます。',
+            '特に朝に急なことが起きると、その遅れを一日中引きずってしまう感じがあります。'
+          ]);
+        }
+        if (hasAny(['仕事', '業務', '会議', '締切', 'タスク'])) {
+          return choose([
+            '業務の方だと、朝の遅れを取り戻そうとして午前中から詰まりやすいです。',
+            '会議の時間に間に合わせることばかり気にして、余裕なく動いてしまう日があります。'
+          ]);
+        }
+        if (hasAny(['相談', '頼', '手伝', '配慮'])) {
+          return '急なことが起きる前提で少し相談できると違うと思うんですが、迷惑をかける気がして言い出しにくいです。';
+        }
+        if (hasAny(['気持ち', '不安', '余裕', 'しんどい'])) {
+          return '周りに迷惑をかけたくない気持ちが強くて、相談するのも少しためらっています。';
+        }
+        if (hasAny(['どうな', '楽', '助か', '理想'])) return '急なことが起きる前提で少し相談できたり、朝に余白を持てたりすると、かなり気持ちが違うと思います。';
+        if (hasAny(['どんな', 'どこ', '一番', '場面'])) return '朝の送り迎えと急な対応が重なる日に、一気に余裕がなくなります。';
+        return userTurnCount > 1
+          ? choose([
+            '表面上は回せていても、少し崩れると一気に苦しくなる感覚があります。',
+            '何とか回してはいるんですが、余裕はかなり少なくなってきています。',
+            '回せてはいても、少しずつ削られている感じはあります。'
+          ])
+          : '何とか回してはいるんですが、余裕はかなり少なくなってきています。';
+      };
+
+      window.__fallbackSendMessage = function () {
+        const input = document.getElementById('userInput');
+        const chat = document.getElementById('chatMessages');
+        const turnCounter = document.getElementById('turnCounter');
+        const select = document.getElementById('scenarioSelect');
+        if (!input || !chat) return;
+        const text = input.value.trim();
+        if (!text) return;
+        const scenarioId = (select && select.value) || 'burnout';
+        const meta = window.__fallbackScenarioMeta[scenarioId] || window.__fallbackScenarioMeta.burnout;
+        const userTurnCount = chat.querySelectorAll ? chat.querySelectorAll('.chat-message.user').length + 1 : 1;
+        const assistantBubbles = chat.querySelectorAll ? Array.from(chat.querySelectorAll('.chat-message.assistant .msg-bubble')) : [];
+        const lastAssistantText = assistantBubbles.length ? assistantBubbles[assistantBubbles.length - 1].textContent.trim() : '';
+        const messageList = chat.querySelectorAll
+          ? Array.from(chat.querySelectorAll('.chat-message')).map(function (node) {
+            const bubble = node.querySelector('.msg-bubble');
+            return {
+              role: node.classList.contains('user') ? 'user' : 'assistant',
+              content: bubble ? bubble.textContent.trim() : ''
+            };
+          }).filter(function (item) { return item.content; })
+          : [];
+        const reply = window.__fallbackLocalScenarioReply(scenarioId, text, userTurnCount, lastAssistantText, messageList.concat([{ role: 'user', content: text }]));
+        chat.innerHTML +=
+          '<div class="chat-message user"><div class="msg-avatar">👔</div><div class="msg-bubble">' + text + '</div></div>' +
+          '<div class="chat-message assistant"><div class="msg-avatar">' + meta.avatar + '</div><div class="msg-bubble">' + reply + '</div></div>';
+        input.value = '';
+        if (turnCounter) turnCounter.textContent = userTurnCount + ' ターン';
+        chat.scrollTop = chat.scrollHeight;
+        input.focus();
+      };
+
+      window.__fallbackEndSession = function () {
+        const panel = document.getElementById('feedbackPanel');
+        const loading = document.getElementById('feedbackLoading');
+        const content = document.getElementById('feedbackContent');
+        const actions = document.getElementById('feedbackActions');
+        const practiceCount = document.getElementById('practiceCount');
+        if (!panel || !content || !actions) return;
+        panel.classList.remove('hidden');
+        if (loading) loading.classList.add('hidden');
+        content.classList.remove('hidden');
+        actions.classList.remove('hidden');
+        content.innerHTML =
+          '<strong>総評</strong><br>相手の状態を急いで結論づけず、整理しながら聞こうとする土台はできています。次は、出てきた言葉を一段だけ具体化する質問を増やすと、1on1の質が安定します。<br><br>' +
+          '<strong>次の改善点</strong><br>「どんな時」「どこが一番」にあたる質問を一つだけ足して、相手の状況を具体に下ろしてください。';
+        if (practiceCount) {
+          const text = (practiceCount.textContent || '').replace(/[^\d]/g, '');
+          const count = Number(text || '0') + 1;
+          practiceCount.innerHTML = '<strong>' + count + '回</strong>';
+        }
+      };
+
+      window.__fallbackCourseToCoach = function () {
+        window.__fallbackSwitchTab('prep');
+        const title = document.getElementById('courseTitle');
+        const input = document.getElementById('coachInput');
+        if (input) {
+          input.value = 'いま講座の「' + ((title && title.textContent) || 'この回') + '」を見ています。次の1on1で、どこを一番意識するか整理したいです。';
+          input.focus();
+        }
+      };
+
+      window.__fallbackPracticeToCoach = function () {
+        window.__fallbackSwitchTab('prep');
+        const select = document.getElementById('scenarioSelect');
+        const input = document.getElementById('coachInput');
+        const scenarioId = (select && select.value) || 'burnout';
+        const meta = window.__fallbackScenarioMeta[scenarioId] || window.__fallbackScenarioMeta.burnout;
+        if (input) {
+          input.value = 'ケース練習の「' + meta.name + '」を見て、実際の1on1では何を優先して聞くべきか整理したいです。';
+          input.focus();
+        }
+      };
+
+      window.__appDispatch = function (action, payload) {
+        const actions = window.__APP_ACTIONS__;
+        const fallbackHandlers = {
+          switchTab: () => (window.__switchTab && window.__switchTab(payload)) || window.__fallbackSwitchTab(payload),
+          openCourse: () => (window.__openCourse && window.__openCourse(payload)) || window.__fallbackOpenCourse(payload),
+          nextCourse: () => (window.__goToNextCourse && window.__goToNextCourse()) || window.__fallbackNextCourse(),
+          markCourseComplete: () => (window.__markCourseComplete && window.__markCourseComplete()) || window.__fallbackMarkCourseComplete(),
+          courseToCoach: () => (window.__seedCoachFromCourse && window.__seedCoachFromCourse()) || window.__fallbackCourseToCoach(),
+          startPractice: () => (window.__startSession && window.__startSession()) || window.__fallbackStartPractice(),
+          endSession: () => (window.__endSession && window.__endSession()) || window.__fallbackEndSession(),
+          sendMessage: () => (window.__sendMessage && window.__sendMessage()) || window.__fallbackSendMessage(),
+          insertStarter: () => (window.__insertStarter && window.__insertStarter()) || window.__fallbackInsertStarter(),
+          replayScenario: () => (window.__startSession && window.__startSession()) || window.__fallbackStartPractice(),
+          practiceToCoach: () => (window.__seedCoachFromScenario && window.__seedCoachFromScenario()) || window.__fallbackPracticeToCoach(),
+          generateExample: () => window.__generateResponseExample && window.__generateResponseExample(),
+          coachStarter: () => window.__coachStarter && window.__coachStarter(payload),
+          coachMemo: () => (window.__sendCoachMessage && window.__sendCoachMessage()) || window.__fallbackCoachMemo(),
+          resetCoach: () => window.__resetCoachFlow && window.__resetCoachFlow(),
+          coachToReview: () => (window.__switchTab && window.__switchTab('review')) || window.__fallbackSwitchTab('review'),
+          saveReview: () => (window.__saveReview && window.__saveReview()) || window.__fallbackSaveReview()
+        };
+        try {
+          if (actions && typeof actions[action] === 'function') {
+            return actions[action](payload);
+          }
+          if (fallbackHandlers[action]) {
+            return fallbackHandlers[action]();
+          }
+        } catch (error) {
+          console.error('Action failed:', action, error);
+          if (fallbackHandlers[action]) {
+            try {
+              return fallbackHandlers[action]();
+            } catch {}
+          }
+          return window.__showAppError('操作中にエラーが発生しました: ' + action);
+        }
+        if (action !== 'switchTab') return;
+        return window.__fallbackSwitchTab(payload);
+      };
+
+      try {
+        const initialScenario = document.getElementById('scenarioSelect');
+        if (initialScenario) {
+          window.__fallbackRenderScenario(initialScenario.value || 'burnout');
+        }
+      } catch {}
+    </script>
+    <script src="./supabase/config.js?v=20260625-0205"></script>
+    <script src="./v2/data.global.js?v=20260625-0205"></script>
+    <script src="./v2/persistence.global.js?v=20260625-0205"></script>
+    <script src="./main-preview.js?v=20260625-0205"></script>
+</body>
+</html>
