@@ -66,7 +66,7 @@ if (!window.__COURSE_SESSIONS__ || !window.__COURSE_SESSIONS__.length) {
 
 const _fallbackDefaultState = () => ({
   currentCourseId: 1, completedCourses: [], currentScenarioId: 'burnout',
-  practiceLogs: [], reviews: [], prepMemo: null,
+  practiceLogs: [], reviews: [], prepMemo: null, previousPrepMemo: null,
   coachMessages: [], coachSummary: null, coachPhase: 0
 });
 
@@ -232,6 +232,7 @@ window.__APP_ACTIONS__ = {
   },
   coachMemo: sendCoachMessage,
   resetCoach: resetCoachFlow,
+  restoreCoach: restorePreviousPrepMemo,
   coachToReview() {
     switchTab('review');
   },
@@ -296,6 +297,7 @@ function boot() {
   };
   window.__sendCoachMessage = sendCoachMessage;
   window.__resetCoachFlow = resetCoachFlow;
+  window.__restorePreviousPrepMemo = restorePreviousPrepMemo;
   window.__saveReview = saveReview;
   window.startCheckout = startCheckout;
   window.openPortal = openPortal;
@@ -488,6 +490,7 @@ function bindEvents() {
     ['generateExampleButton', 'generateExample'],
     ['sendCoachButton', 'coachMemo'],
     ['resetCoachButton', 'resetCoach'],
+    ['restoreCoachButton', 'restoreCoach'],
     ['coachToReviewButton', 'coachToReview'],
     ['saveReviewButton', 'saveReview']
   ];
@@ -1293,6 +1296,9 @@ function buildResponseExample(text) {
 }
 
 function resetCoachFlow() {
+  if (state.prepMemo) {
+    state.previousPrepMemo = { ...state.prepMemo };
+  }
   state.coachMessages = [];
   state.coachSummary = null;
   state.coachPhase = 0;
@@ -1305,9 +1311,33 @@ function resetCoachFlow() {
   renderMetrics();
 }
 
+function restorePreviousPrepMemo() {
+  if (!state.previousPrepMemo) return;
+  state.prepMemo = { ...state.previousPrepMemo };
+  state.coachSummary = {
+    intent: state.prepMemo.intent || 'general',
+    purpose: state.prepMemo.purpose || '',
+    focus: state.prepMemo.focus || '',
+    openingLine: state.prepMemo.openingLine || '',
+    firstQuestion: state.prepMemo.firstQuestion || '',
+    holdBack: state.prepMemo.holdBack || ''
+  };
+  state.coachMessages = [];
+  state.coachPhase = 3;
+  if (els.coachInput) els.coachInput.value = '';
+  saveState();
+  renderCoachSection();
+  renderPrepOutput();
+  renderHomeOverview();
+  renderMetrics();
+}
+
 function sendCoachMessage(prefilledText) {
   const text = (prefilledText || (els.coachInput && els.coachInput.value) || '').trim();
   if (!text) return;
+  if (state.prepMemo) {
+    state.previousPrepMemo = { ...state.prepMemo };
+  }
   state.coachMessages = [{ role: 'user', content: text }];
   state.coachPhase = 3;
   state.coachSummary = buildCoachSummary(text);
@@ -1451,6 +1481,10 @@ function buildCoachReply(summary, phase) {
 
 function renderCoachSection() {
   if (!els.coachPhaseLabel || !els.coachChatBox) return;
+  const restoreButton = getById('restoreCoachButton');
+  if (restoreButton) {
+    restoreButton.classList.toggle('hidden', !state.previousPrepMemo);
+  }
   els.coachPhaseLabel.textContent = state.prepMemo
     ? '4点メモができました。口に出すのは「最初の一言例」だけで十分です。'
     : '今回の1on1前に、着地点と入り方を短く整えます。';

@@ -419,7 +419,8 @@
               </div>
               <div class="action-row" style="margin-top:16px;">
                 <button class="primary-button" id="sendCoachButton" onclick="window.__appDispatch('coachMemo')">4点メモをつくる</button>
-                <button class="secondary-button" id="resetCoachButton" onclick="window.__appDispatch('resetCoach')">この整理をやり直す</button>
+                <button class="secondary-button" id="resetCoachButton" onclick="window.__appDispatch('resetCoach')">今回の入力をやり直す</button>
+                <button class="ghost-button hidden" id="restoreCoachButton" onclick="window.__appDispatch('restoreCoach')">前回の保存メモに戻す</button>
               </div>
             </article>
 
