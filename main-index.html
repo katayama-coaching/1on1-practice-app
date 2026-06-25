@@ -391,25 +391,25 @@
           <div class="panel-head">
             <div>
               <span class="badge">面談前AIコーチ</span>
-              <h2>今回の1on1で何を目指し、<br>何を見極めるかを整える。</h2>
-              <p>答えを教わる前に、自分の軸を言葉にするための画面です。今回の着地点、先に見たいこと、入り方、急がないことを短く固めます。</p>
+              <h2>面談の前に3分で、<br>今日の進め方を整える。</h2>
+              <p>ここでは難しい理論を学ぶのではなく、今日の1on1で「何を確認するか」「どう入り始めるか」を短く整えます。</p>
             </div>
           </div>
 
           <div class="grid-2">
             <article class="section-card">
               <div class="coach-stage">
-                <div class="coach-stage-label" id="coachPhaseLabel">今回の1on1前に、着地点と入り方を短く整えます。</div>
+                <div class="coach-stage-label" id="coachPhaseLabel">1. 下のボタンを1つ選ぶ 2. 気になることを短く書く 3. 面談メモを作る、の順で進めます。</div>
               </div>
               <div class="starter-grid" id="coachStarterGrid">
                 <button class="starter-button" data-starter="今回いちばん確かめたいことを整理したい" onclick="window.__appDispatch('coachStarter','今回いちばん確かめたいことを整理したい')">今回いちばん確かめたいことを整理したい</button>
+                <button class="starter-button" data-starter="最初の一言を整えたい" onclick="window.__appDispatch('coachStarter','最初の一言を整えたい')">最初の一言を整えたい</button>
                 <button class="starter-button" data-starter="どこまで踏み込むかの軸を整理したい" onclick="window.__appDispatch('coachStarter','どこまで踏み込むかの軸を整理したい')">どこまで踏み込むか決めたい</button>
-                <button class="starter-button" data-starter="今回の面談で何を目指すか整理したい" onclick="window.__appDispatch('coachStarter','今回の面談で何を目指すか整理したい')">今回の面談のゴールを決めたい</button>
                 <button class="starter-button" data-starter="今回は急がないことを決めたい" onclick="window.__appDispatch('coachStarter','今回は急がないことを決めたい')">今回は急がないことを決めたい</button>
               </div>
               <div class="coach-chat-card" id="coachChatBox">
                 <div class="coach-chat-row coach-chat-system">
-                  <div class="coach-bubble">まずはスターターを選ぶか、下の入力欄から今回の1on1前に整理したいことを書いてください。最後に右側へ、今日そのまま使える4点メモを残します。</div>
+                  <div class="coach-bubble">まずは上のボタンを1つ選ぶか、下の入力欄に今気になっていることを書いてください。作られる4点メモのうち、実際に口に出すのは「最初の一言」だけです。</div>
                 </div>
               </div>
               <div class="field" style="margin-top:16px;">
@@ -418,22 +418,22 @@
                 <small>短くて大丈夫です。今いちばん気になっていることから書いてください。</small>
               </div>
               <div class="action-row" style="margin-top:16px;">
-                <button class="primary-button" id="sendCoachButton" onclick="window.__appDispatch('coachMemo')">4点メモをつくる</button>
+                <button class="primary-button" id="sendCoachButton" onclick="window.__appDispatch('coachMemo')">面談メモを作る</button>
                 <button class="secondary-button" id="resetCoachButton" onclick="window.__appDispatch('resetCoach')">今回の入力をやり直す</button>
                 <button class="ghost-button hidden" id="restoreCoachButton" onclick="window.__appDispatch('restoreCoach')">前回の保存メモに戻す</button>
               </div>
             </article>
 
             <article class="section-card">
-              <h3>今回の面談メモ</h3>
+              <h3>このまま使う面談前メモ</h3>
               <div class="prep-list" id="prepOutput">
                 <div class="prep-item">
                   <div class="bullet">1</div>
-                  <div>ここに、面談前AIコーチで整理した4点メモが表示されます。面談直前はこの欄だけ見返せば十分です。</div>
+                  <div>ここに4点メモが表示されます。3番の「最初の一言」は口に出して使い、1・2・4は自分の頭の中のメモとして見返してください。</div>
                 </div>
               </div>
               <div class="action-row" style="margin-top:16px;">
-                <button class="ghost-button" id="coachToReviewButton" onclick="window.__appDispatch('coachToReview')">面談後にふり返りを残す</button>
+                <button class="ghost-button" id="coachToReviewButton" onclick="window.__appDispatch('coachToReview')">面談後のふり返りへ</button>
               </div>
             </article>
           </div>
@@ -764,19 +764,19 @@
             ? '結論や引き止めを急がず、まず背景確認を優先する'
             : '論点を増やしすぎない';
         if (phase) {
-          phase.textContent = '4点メモができました。口に出すのは「最初の一言例」だけで十分です。';
+          phase.textContent = '面談メモができました。口に出すのは3番だけで十分です。';
         }
         if (chat) {
           chat.innerHTML =
             '<div class="coach-chat-row coach-chat-user"><div class="coach-bubble">' + raw + '</div></div>' +
-            '<div class="coach-chat-row coach-chat-ai"><div class="coach-bubble">今回の1on1では「' + purpose + '」が見えれば十分そうです。右側の4点メモを面談直前に見返してください。</div></div>';
+            '<div class="coach-chat-row coach-chat-ai"><div class="coach-bubble">今回の1on1では「' + purpose + '」が見えれば十分そうです。右側の4点メモは、3だけを口に出し、1・2・4は自分の準備メモとして見返してください。</div></div>';
         }
         if (prep) {
           prep.innerHTML =
-            '<div class="prep-item"><div class="bullet">1</div><div><strong>今回の着地点</strong><div>' + purpose + '</div></div></div>' +
-            '<div class="prep-item"><div class="bullet">2</div><div><strong>先に見たいこと</strong><div>' + focus + '</div></div></div>' +
-            '<div class="prep-item"><div class="bullet">3</div><div><strong>最初の一言例</strong><div>' + opening + '</div></div></div>' +
-            '<div class="prep-item"><div class="bullet">4</div><div><strong>今日は急がないこと</strong><div>' + holdBack + '</div></div></div>';
+            '<div class="prep-item"><div class="bullet">1</div><div><strong>今日の着地点</strong><div>' + purpose + '</div></div></div>' +
+            '<div class="prep-item"><div class="bullet">2</div><div><strong>最初に見たいこと</strong><div>' + focus + '</div></div></div>' +
+            '<div class="prep-item"><div class="bullet">3</div><div><strong>口に出す最初の一言</strong><div>' + opening + '</div></div></div>' +
+            '<div class="prep-item"><div class="bullet">4</div><div><strong>自分の中で急がないこと</strong><div>' + holdBack + '</div></div></div>';
         }
       };
 

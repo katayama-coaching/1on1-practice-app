@@ -1205,14 +1205,14 @@ function renderPrepOutput() {
   const output = getById('prepOutput');
   if (!output) return;
   if (!state.prepMemo) {
-    output.innerHTML = '<div class="prep-item"><div class="bullet">1</div><div>ここに、面談前AIコーチで整理した4点メモが表示されます。面談直前はこの欄だけ見返せば十分です。</div></div>';
+    output.innerHTML = '<div class="prep-item"><div class="bullet">1</div><div>ここに4点メモが表示されます。3番の「最初の一言」は口に出して使い、1・2・4は自分の頭の中のメモとして見返してください。</div></div>';
     return;
   }
   output.innerHTML =
-    prepMemoRow('今回の着地点', state.prepMemo.purpose, 1) +
-    prepMemoRow('先に見たいこと', state.prepMemo.focus, 2) +
-    prepMemoRow('最初の一言例', state.prepMemo.openingLine, 3) +
-    prepMemoRow('今日は急がないこと', state.prepMemo.holdBack, 4);
+    prepMemoRow('今日の着地点', state.prepMemo.purpose, 1) +
+    prepMemoRow('最初に見たいこと', state.prepMemo.focus, 2) +
+    prepMemoRow('口に出す最初の一言', state.prepMemo.openingLine, 3) +
+    prepMemoRow('自分の中で急がないこと', state.prepMemo.holdBack, 4);
 }
 
 function generateResponseExample(prefilledText) {
@@ -1375,6 +1375,7 @@ function buildCoachSummary(text) {
 }
 
 function detectCoachIntent(text) {
+  if (text.includes('最初の一言')) return 'opening';
   if (text.includes('踏み込')) return 'boundary';
   if (text.includes('ゴール') || text.includes('目指す')) return 'goal';
   if (text.includes('急がない') || text.includes('手放す')) return 'holdback';
@@ -1384,6 +1385,7 @@ function detectCoachIntent(text) {
 }
 
 function detectPurpose(text) {
+  if (text.includes('最初の一言')) return '相手が構えすぎずに話し始められる入り方を先に整えたい';
   if (text.includes('踏み込')) return 'どこまで聞くと有効で、どこから急ぎすぎになるかの線を先に決めたい';
   if (text.includes('ゴール') || text.includes('目指す')) return '今回の1on1を、何を持ち帰れれば十分かで定義したい';
   if (text.includes('急がない') || text.includes('手放す')) return '今回あえて結論を出さないことを決め、面談の圧を下げたい';
@@ -1396,6 +1398,7 @@ function detectPurpose(text) {
 }
 
 function detectFocus(text) {
+  if (text.includes('最初の一言')) return '相手が話しやすくなる入り方';
   if (text.includes('踏み込')) return '踏み込みすぎないための確認ポイント';
   if (text.includes('ゴール') || text.includes('目指す')) return '今回持ち帰れれば十分な着地点';
   if (text.includes('急がない') || text.includes('手放す')) return '今回は答えを出さずに置いておく論点';
@@ -1408,6 +1411,7 @@ function detectFocus(text) {
 }
 
 function detectRisk(text, lastReview) {
+  if (text.includes('最初の一言')) return '説明を長くしすぎず、最初の一言のあとにすぐ問いを重ねすぎない';
   if (text.includes('踏み込') || text.includes('退職')) return '結論や引き止めを急がず、まず背景確認を優先する';
   if (text.includes('ゴール') || text.includes('目指す')) return '全部を解決しようとせず、今日の到達点を広げすぎない';
   if (text.includes('急がない') || text.includes('手放す')) return '助言、評価、正しさの説明をすぐに出さない';
@@ -1443,6 +1447,12 @@ function buildFirstQuestion(focus) {
 
 function buildCoachReply(summary, phase) {
   const phaseIntros = {
+    opening: [
+      '最初に整えたいのは、相手が身構えずに話し始められる入口です。',
+      '次に見たいのは、最初から深掘りしすぎず、どこからなら話しやすそうかという点です。',
+      '入り方としては、短い一言を置いてから、一問だけ開く流れが合います。',
+      '最後は、説明しすぎず、相手の反応を待つ余白を自分の中に残しておくのが大事です。'
+    ],
     boundary: [
       '最初に決めたいのは、どこまで聞くかより、どこまでなら相手が話しやすそうかです。',
       '次に見たいのは、事実確認の範囲なのか、本音に触れる話なのか、その境目です。',
@@ -1471,10 +1481,10 @@ function buildCoachReply(summary, phase) {
 
   const intro = phaseIntros[summary.intent];
   const replies = [
-    (intro ? intro[0] + ' ' : '') + '今回の1on1では「' + summary.purpose + '」が見えれば十分そうです。右側の1と2は、まず自分の頭の中をそろえるためのメモとして見てください。',
-    (intro ? intro[1] + ' ' : '') + '先に見たいことは「' + summary.focus + '」です。ここが曖昧なままだと、会話の途中で論点が増えやすくなります。',
-    (intro ? intro[2] + ' ' : '') + '相手に実際に言う言葉としては、「' + summary.openingLine + '」くらいの自然さで十分です。必要なら次の一問は「' + summary.firstQuestion + '」です。',
-    (intro ? intro[3] + ' ' : '') + '最後に、自分の中では「' + summary.holdBack + '」を持っておくと進めやすいです。右側の4点メモは、3だけ口に出す想定で、他は頭の中の整理として使ってください。'
+    (intro ? intro[0] + ' ' : '') + '今回の1on1では「' + summary.purpose + '」が見えれば十分そうです。右側の1と2は、自分の頭の中をそろえるためのメモとして使ってください。',
+    (intro ? intro[1] + ' ' : '') + '最初に見たいことは「' + summary.focus + '」です。ここが先に定まると、会話の途中で論点が増えにくくなります。',
+    (intro ? intro[2] + ' ' : '') + '実際に口に出すのは、「' + summary.openingLine + '」くらいで十分です。必要なら次の一問として「' + summary.firstQuestion + '」を続けてください。',
+    (intro ? intro[3] + ' ' : '') + '最後に、自分の中では「' + summary.holdBack + '」を持っておくと進めやすいです。右側の4点メモは、3だけを口に出し、1・2・4は自分の準備メモとして使ってください。'
   ];
   return replies[Math.min(phase, replies.length - 1)];
 }
@@ -1486,16 +1496,16 @@ function renderCoachSection() {
     restoreButton.classList.toggle('hidden', !state.previousPrepMemo);
   }
   els.coachPhaseLabel.textContent = state.prepMemo
-    ? '4点メモができました。口に出すのは「最初の一言例」だけで十分です。'
-    : '今回の1on1前に、着地点と入り方を短く整えます。';
+    ? '面談メモができました。口に出すのは3番だけで十分です。'
+    : '1. ボタンを選ぶ 2. 気になることを書く 3. 面談メモを作る、の順で進めます。';
 
   if (!state.coachMessages.length) {
     if (state.prepMemo) {
       els.coachChatBox.innerHTML =
-        '<div class="coach-chat-row coach-chat-system"><div class="coach-bubble">直近の面談前メモを表示しています。新しく整理し直すと、この欄も最新内容に入れ替わります。</div></div>';
+        '<div class="coach-chat-row coach-chat-system"><div class="coach-bubble">直近の面談前メモを表示しています。新しく作り直すと、この欄も最新内容に入れ替わります。</div></div>';
       return;
     }
-    els.coachChatBox.innerHTML = '<div class="coach-chat-row coach-chat-system"><div class="coach-bubble">まずはスターターを選ぶか、下の入力欄から今回の1on1前に整理したいことを書いてください。最後に右側へ、今日そのまま使える4点メモを残します。</div></div>';
+    els.coachChatBox.innerHTML = '<div class="coach-chat-row coach-chat-system"><div class="coach-bubble">まずは上のボタンを1つ選ぶか、下の入力欄に今気になっていることを書いてください。作られる4点メモのうち、実際に口に出すのは3番の「最初の一言」だけです。</div></div>';
     return;
   }
 
@@ -1580,9 +1590,9 @@ function renderHomeOverview() {
   if (state.prepMemo) {
     els.homePrepMemo.classList.remove('muted');
     els.homePrepMemo.innerHTML =
-      '<strong>今回の着地点</strong>' +
+      '<strong>今日の着地点</strong>' +
       '<div style="margin-top:8px;">' + escapeHtml(state.prepMemo.purpose) + '</div>' +
-      '<div style="margin-top:12px;"><strong>最初の一言例</strong></div>' +
+      '<div style="margin-top:12px;"><strong>口に出す最初の一言</strong></div>' +
       '<div style="margin-top:6px;">' + escapeHtml(state.prepMemo.openingLine) + '</div>';
   } else {
     els.homePrepMemo.classList.add('muted');
