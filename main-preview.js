@@ -265,18 +265,24 @@ function showLoginError(message) {
   if (gate) gate.style.display = '';
 }
 
+function _setLoginStatus(msg) {
+  const btn = document.getElementById('lg-btn');
+  if (btn) btn.textContent = msg;
+}
+
 async function completeLogin(email) {
-  localStorage.setItem('user_email', email);
+  try { localStorage.setItem('user_email', email); } catch (e) {}
   const gate = document.getElementById('login-gate');
-  if (gate) gate.style.display = 'none';
+  _setLoginStatus('初期化中...');
   try {
     const timeout = new Promise((_, reject) =>
       setTimeout(() => reject(new Error('initApp timeout')), 12000)
     );
     await Promise.race([initApp(), timeout]);
+    if (gate) gate.style.display = 'none';
   } catch (error) {
     console.error('App initialization failed after login.', error);
-    localStorage.removeItem('user_email');
+    try { localStorage.removeItem('user_email'); } catch (e) {}
     showLoginError('初期化に失敗しました。ページを再読み込みしてください。');
   }
 }
