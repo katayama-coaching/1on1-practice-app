@@ -47,16 +47,20 @@ function parseState(raw) {
 }
 
 function getLocalState() {
-  const scoped = parseState(localStorage.getItem(getScopedKey()));
-  if (scoped) {
-    return { ...defaultState, ...scoped };
-  }
+  try {
+    const scoped = parseState(localStorage.getItem(getScopedKey()));
+    if (scoped) {
+      return { ...defaultState, ...scoped };
+    }
 
-  const legacy = parseState(localStorage.getItem(legacyStorageKey));
-  if (legacy) {
-    const merged = { ...defaultState, ...legacy };
-    localStorage.setItem(getScopedKey(), JSON.stringify(merged));
-    return merged;
+    const legacy = parseState(localStorage.getItem(legacyStorageKey));
+    if (legacy) {
+      const merged = { ...defaultState, ...legacy };
+      localStorage.setItem(getScopedKey(), JSON.stringify(merged));
+      return merged;
+    }
+  } catch (error) {
+    console.warn('local state read failed, using default state.', error);
   }
 
   return { ...defaultState };
