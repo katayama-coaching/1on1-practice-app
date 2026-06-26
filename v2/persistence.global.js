@@ -517,18 +517,29 @@ async function loadAppState() {
   const localState = getLocalState();
   if (!remoteConfig) return localState;
 
+  const timeoutMs = 5000;
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Supabase load timeout')), timeoutMs)
+  );
+
   try {
-    await ensureRemoteIdentity();
-    const [remoteSnapshot, normalizedState] = await Promise.all([
-      fetchRemoteSnapshot(),
-      fetchNormalizedState()
+    const result = await Promise.race([
+      (async () => {
+        await ensureRemoteIdentity();
+        const [remoteSnapshot, normalizedState] = await Promise.all([
+          fetchRemoteSnapshot(),
+          fetchNormalizedState()
+        ]);
+        const merged = mergeLoadedState(localState, remoteSnapshot && remoteSnapshot.state, normalizedState);
+        persistLocalState(merged);
+        await syncLearningProgress(merged);
+        await upsertRemoteSnapshot(merged);
+        syncMode = 'supabase';
+        return merged;
+      })(),
+      timeoutPromise
     ]);
-    const merged = mergeLoadedState(localState, remoteSnapshot && remoteSnapshot.state, normalizedState);
-    persistLocalState(merged);
-    await syncLearningProgress(merged);
-    await upsertRemoteSnapshot(merged);
-    syncMode = 'supabase';
-    return merged;
+    return result;
   } catch (error) {
     console.warn('Falling back to local-only persistence.', error);
     syncMode = 'local';

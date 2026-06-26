@@ -270,11 +270,14 @@ async function completeLogin(email) {
   const gate = document.getElementById('login-gate');
   if (gate) gate.style.display = 'none';
   try {
-    await initApp();
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('initApp timeout')), 12000)
+    );
+    await Promise.race([initApp(), timeout]);
   } catch (error) {
     console.error('App initialization failed after login.', error);
     localStorage.removeItem('user_email');
-    showLoginError('初期化に失敗しました。もう一度お試しください。');
+    showLoginError('初期化に失敗しました。ページを再読み込みしてください。');
   }
 }
 
