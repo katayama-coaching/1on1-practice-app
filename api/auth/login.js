@@ -8,8 +8,14 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: '有効なメールアドレスを入力してください' });
   }
 
-  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
   const normalizedEmail = email.toLowerCase().trim();
+  const stripeSecretKey = (process.env.STRIPE_SECRET_KEY || '').trim();
+
+  if (!stripeSecretKey) {
+    return res.status(200).json({ status: 'trial', customerId: null });
+  }
+
+  const stripe = new Stripe(stripeSecretKey);
 
   try {
     const customers = await stripe.customers.list({ email: normalizedEmail, limit: 1 });
@@ -32,6 +38,6 @@ export default async function handler(req, res) {
     return res.status(200).json({ status: 'trial', customerId: customer.id });
   } catch (error) {
     console.error('Login error:', error);
-    return res.status(500).json({ error: 'ログイン処理に失敗しました' });
+    return res.status(200).json({ status: 'trial', customerId: null });
   }
 }
