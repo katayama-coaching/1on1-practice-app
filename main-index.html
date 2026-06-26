@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>1on1基礎コーチング講座 | AI実践アプリ</title>
   <meta name="description" content="1on1の進め方に迷う管理職向け。10回講座、ケース練習、本番前準備、ふり返りを一体化したAI実践アプリ。">
-    <link rel="stylesheet" href="./main.css?v=20260627-03">
+    <link rel="stylesheet" href="./main.css?v=20260627-04">
 </head>
 <body>
   <script>
@@ -51,17 +51,22 @@
         if (typeof window.doLogin === 'function') {
           return window.doLogin();
         }
-        // main-preview.js がまだ読み込み中の可能性。最大10秒リトライ
+        // main-preview.js が読み込み中の可能性。最大30秒リトライ＋秒数表示
         let _waitMs = 0;
+        const _maxWaitMs = 30000;
         const _waitTimer = setInterval(function () {
           _waitMs += 100;
           if (typeof window.doLogin === 'function') {
             clearInterval(_waitTimer);
+            if (errEl) errEl.textContent = '';
             window.doLogin();
-          } else if (_waitMs >= 10000) {
+          } else if (_waitMs >= _maxWaitMs) {
             clearInterval(_waitTimer);
             if (errEl) errEl.textContent = 'アプリの読み込みに失敗しました。ページを再読み込みしてください。';
             if (btn) { btn.disabled = false; btn.textContent = '続ける'; }
+          } else if (_waitMs % 1000 === 0) {
+            const remaining = Math.ceil((_maxWaitMs - _waitMs) / 1000);
+            if (errEl) errEl.textContent = 'アプリを読み込み中... (' + remaining + 's)';
           }
         }, 100);
       } catch (error) {
@@ -1148,9 +1153,9 @@
       }
     } catch {}
   </script>
-    <script src="./supabase/config.js?v=20260627-03"></script>
-    <script src="./v2/data.global.js?v=20260627-03"></script>
-    <script src="./v2/persistence.global.js?v=20260627-03"></script>
-    <script src="./main-preview.js?v=20260627-03"></script>
+    <script src="./supabase/config.js?v=20260627-04"></script>
+    <script src="./v2/data.global.js?v=20260627-04"></script>
+    <script src="./v2/persistence.global.js?v=20260627-04"></script>
+    <script src="./main-preview.js?v=20260627-04"></script>
 </body>
 </html>
