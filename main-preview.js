@@ -239,6 +239,10 @@ window.__APP_ACTIONS__ = {
   saveReview
 };
 
+// boot() が失敗しても doLogin は使えるようトップレベルで先出し登録
+window.doLogin = doLogin;
+window.__completeLogin = completeLogin;
+
 try {
   boot();
 } catch (bootError) {
@@ -303,15 +307,17 @@ function boot() {
   window.openPortal = openPortal;
 
   const input = document.getElementById('lg-email');
-  input.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') doLogin();
-  });
+  if (input) {
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') doLogin();
+    });
+  }
 
   const email = localStorage.getItem('user_email');
   if (email) {
     completeLogin(email);
   } else {
-    setTimeout(() => input.focus(), 100);
+    if (input) setTimeout(() => input.focus(), 100);
   }
 
   const params = new URLSearchParams(window.location.search);
